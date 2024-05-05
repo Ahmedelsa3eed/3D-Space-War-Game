@@ -1,0 +1,36 @@
+Drawing (Meniem, Saied):
+	Phase 1:
+		Instantiation of Sun and 8 planets (Mercury, Venus, Earth, Mars, Jupiter, Saturn, Uranus, Neptune)
+		User/Enemy spacecraft instantiation
+		projectile/s instantiation
+		Pickable objects instantiation
+		Health bars
+		UI System (Menus)
+	Phase 2:
+		Planets and spacecrafts textures
+
+Animation (Mohamed, Abdelrahman):
+	Phase 1:
+		Solar system animation (spinning and rotation of planets around Sun and Moon around Earth)
+		User/Enemy Spacecraft movement
+		projectile/s movement
+	Phase 2:
+		Visual effects (Shooting, Destroying, Collision, etc.)
+
+Actions (Amr):
+	Phase 1:
+		User/Enemy spacecraft shooting
+		Pickable objects(increasing damage, increasing health)
+		User/Enemy spacecraft health
+		Collision Detection (Spacecraft with projectile, Spacecraft with planet/Sun, Spacecraft with pickable objects)
+		Scoring System gameover/win (Survival mode)
+	Phase 2:
+		Time attack mode: destroy all enemies before the time passes
+
+Phase 2:
+	Lighting of the scene and emission of objects
+	Sound effects (UI, Shooting, Destroying, etc.)
+
+Skybox
+
+Level design
