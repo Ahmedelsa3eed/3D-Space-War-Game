@@ -148,6 +148,75 @@ void drawMissile(GLfloat bodyRadius, GLfloat bodyLength, GLfloat noseLength) {
     glColor3f(1.0, 1.0, 1.0);
 }
 
+// Function to draw a health sphere with a plus sign inside
+void drawHealthSphere(GLfloat radius) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glColor4f(0.0f, 1.0f, 0.0f, 0.5f); // Green color with 50% transparency for the health sphere
+    glutSolidSphere(radius, 20, 20);
+
+    // Disable depth test temporarily
+    glDisable(GL_DEPTH_TEST);
+
+    // Draw a plus sign inside the sphere
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // White color for the plus sign with full opacity
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 0.0f); // Position the plus sign at the center
+    glBegin(GL_QUADS);
+    glVertex3f(-radius * 0.1f, radius * 0.3f, 0.0f); // Top-left
+    glVertex3f(radius * 0.1f, radius * 0.3f, 0.0f);  // Top-right
+    glVertex3f(radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-right
+    glVertex3f(-radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-left
+    glEnd();
+    glBegin(GL_QUADS);
+    glVertex3f(-radius * 0.3f, radius * 0.1f, 0.0f); // Top-left
+    glVertex3f(radius * 0.3f, radius * 0.1f, 0.0f);  // Top-right
+    glVertex3f(radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-right
+    glVertex3f(-radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-left
+    glEnd();
+    glPopMatrix();
+
+    // Enable depth test back
+    glEnable(GL_DEPTH_TEST);
+
+    glDisable(GL_BLEND);
+
+    glColor3f(1.0, 1.0, 1.0);
+}
+
+// Function to draw a damage sphere with a flame-like shape inside
+void drawDamageSphere(GLfloat radius) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glColor4f(1.0f, 0.0f, 0.0f, 0.5f); // Red color with 50% transparency for the damage sphere
+    glutSolidSphere(radius, 20, 20);
+
+    // Disable depth test temporarily
+    glDisable(GL_DEPTH_TEST);
+
+    // Draw a flame-like shape inside the sphere
+    glColor4f(1.0f, 0.5f, 0.0f, 1.0f); // Orange color for the flame with full opacity
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 0.0f); // Position the flame at the center
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.0f, radius * 0.5f, 0.0f); // Top
+    glVertex3f(-radius * 0.2f, -radius * 0.3f, 0.0f); // Bottom-left
+    glVertex3f(radius * 0.2f, -radius * 0.3f, 0.0f); // Bottom-right
+    glEnd();
+    glEnd();
+    glPopMatrix();
+
+    // Enable depth test back
+    glEnable(GL_DEPTH_TEST);
+
+    glDisable(GL_BLEND);
+
+    glColor3f(1.0, 1.0, 1.0);
+}
+
+
 // Drawing routine
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -233,6 +302,17 @@ void drawScene(void) {
     glPushMatrix();
     glTranslatef(20.0, 0.0, 5.0); // Position of the missle
     drawMissile(0.1, 0.2, 0.08); // Adjust the parameters as needed
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(25.0, 0.0, 5.0); // Position of the health sphere
+    drawHealthSphere(0.3); // Adjust the parameters as needed
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslatef(30.0, 0.0, 5.0); // Position of the damage sphere
+    drawDamageSphere(0.3); // Adjust the parameters as needed
     glPopMatrix();
 
     glutSwapBuffers();
