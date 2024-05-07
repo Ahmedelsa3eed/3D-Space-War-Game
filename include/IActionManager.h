@@ -1,6 +1,6 @@
 #pragma once
 
-class IActionManager : public IActionManager
+class IActionManager
 {
 public:
     virtual void notifyClockTick() = 0;

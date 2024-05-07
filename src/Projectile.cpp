@@ -1,6 +1,11 @@
 #include "Projectile.h"
 
-Projectile::Projectile(GLfloat dmg, Point source, Point direction) : damage(damage), source(source), direction(direction), position(source) {}
+Projectile::Projectile(GLfloat dmg, Point source, Point direction) {
+    this->damage = dmg;
+    this->source = source;
+    this->direction = direction;
+    this->position = source;
+}
 
 void Projectile::setPosition(Point newPosition) {
     position = newPosition;
