@@ -5,6 +5,8 @@
 #include <GL/freeglut.h>
 #include <SOIL/SOIL.h>
 
+const unsigned int CLOCK_TICK_PERIOD = 50;
+
 // Global variables for celestial bodies
 GLuint sunTexture;
 GLuint mercuryTexture, venusTexture, earthTexture, marsTexture;
@@ -218,7 +220,6 @@ void keyInput(unsigned char key, int x, int y) {
         exit(0); // Exit on ESC
         break;
     }
-    glutPostRedisplay(); // Mark the window to be redisplayed
 }
 
 // Function to handle mouse input for camera rotation
@@ -243,8 +244,13 @@ void mouseMotion(int x, int y) {
 
     lastX = x;
     lastY = y;
+}
 
-    glutPostRedisplay(); // Mark the window to be redisplayed
+// Timer function.
+void clockTick(int value)
+{
+    glutPostRedisplay();
+    glutTimerFunc(CLOCK_TICK_PERIOD, clockTick, value);
 }
 
 // Main routine
@@ -253,8 +259,8 @@ int main(int argc, char **argv) {
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowSize(500, 500);
+    glutInitWindowPosition(0, 0);
     glutCreateWindow("Solar System");
     glutDisplayFunc(drawScene);
     glutReshapeFunc(resize);
@@ -263,6 +269,7 @@ int main(int argc, char **argv) {
     glewExperimental = GL_TRUE;
     glewInit();
     setup();
+    clockTick(-1);
     glutMainLoop();
     return 0;
 }
