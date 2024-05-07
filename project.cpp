@@ -8,10 +8,8 @@
 const unsigned int CLOCK_TICK_PERIOD = 50;
 
 // Global variables for celestial bodies
-GLuint sunTexture;
-GLuint mercuryTexture, venusTexture, earthTexture, marsTexture;
-GLuint jupiterTexture, saturnTexture, uranusTexture, neptuneTexture;
-GLuint moonTexture;
+GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, moonTexture;
+GLuint spacecraftTexture;
 
 // Camera position
 GLfloat cameraX = 0.0f;
@@ -33,6 +31,7 @@ void loadTextures() {
     uranusTexture = SOIL_load_OGL_texture("textures/uranus.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     neptuneTexture = SOIL_load_OGL_texture("textures/neptune.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     moonTexture = SOIL_load_OGL_texture("textures/moon.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+    spacecraftTexture = SOIL_load_OGL_texture("textures/spacecraft.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
 }
 
 // Function to draw a celestial body
@@ -48,56 +47,177 @@ void drawCelestialBody(GLfloat radius, GLuint texture) {
 
 // Function to draw a spacecraft
 void drawSpacecraft(GLfloat bodyRadius, GLfloat bodyLength, GLfloat cockpitRadius, GLfloat cockpitLength) {
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, spacecraftTexture);
+
     // Body of the spacecraft (fuselage)
     glPushMatrix();
-    glColor3f(0.5, 0.5, 0.5); // Gray color for the spacecraft body
     glTranslatef(0.0, 0.0, -bodyLength * 0.5);
-    glutSolidCylinder(bodyRadius, bodyLength, 20, 20);
+    GLUquadric *bodyQuadric = gluNewQuadric();
+    gluQuadricTexture(bodyQuadric, GL_TRUE);
+    gluCylinder(bodyQuadric, bodyRadius, bodyRadius, bodyLength, 20, 20);
+    gluDeleteQuadric(bodyQuadric);
+    glPopMatrix();
+
+    // Cap the ends of the cylinder
+    glPushMatrix();
+    glTranslatef(0.0, 0.0, -bodyLength * 0.5);
+    GLUquadric *frontDiskQuadric = gluNewQuadric();
+    gluQuadricTexture(frontDiskQuadric, GL_TRUE);
+    gluQuadricNormals(frontDiskQuadric, GLU_SMOOTH);
+    gluDisk(frontDiskQuadric, 0.0, bodyRadius, 20, 20);
+    gluDeleteQuadric(frontDiskQuadric);
     glPopMatrix();
 
     // Cockpit of the spacecraft
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.5f, 0.5f, 0.5f, 0.8f); // Transparent gray color
     glPushMatrix();
-    glColor3f(0.0, 1.0, 0.0); // Green color for the spacecraft cockpit
     glTranslatef(0.0, 0.0, bodyLength * 0.5);
-    glutSolidSphere(cockpitRadius, 20, 20);
+    GLUquadric *cockpitQuadric = gluNewQuadric();
+    gluQuadricNormals(cockpitQuadric, GLU_SMOOTH);
+    gluQuadricTexture(cockpitQuadric, GL_FALSE);
+    gluSphere(cockpitQuadric, cockpitRadius, 20, 20);
+    gluDeleteQuadric(cockpitQuadric);
     glPopMatrix();
+    glDisable(GL_BLEND);
 
     // Wings of the spacecraft
-    glPushMatrix();
-    glColor3f(0.5, 0.5, 0.5); // Gray color for the wings
-    GLfloat wingLength = bodyRadius * 1.5;
-    GLfloat wingWidth = bodyRadius * 0.2;
+    GLfloat wingLength = bodyRadius * 2.0;
+    GLfloat wingWidth = bodyRadius * 0.4;
+    GLfloat wingHeight = bodyRadius * 0.1;
+
     // Left wing
     glPushMatrix();
-    glTranslatef(-wingLength * 0.5, 0.0, 0.0);
-    glRotatef(90.0, 0.0, 1.0, 0.0);
-    glutSolidCone(wingLength, wingWidth, 20, 20);
-    glPopMatrix();
-    // Right wing
-    glPushMatrix();
-    glTranslatef(wingLength * 0.5, 0.0, 0.0);
-    glRotatef(90.0, 0.0, 1.0, 0.0);
-    glutSolidCone(wingLength, wingWidth, 20, 20);
-    glPopMatrix();
+    glTranslatef(-bodyRadius * 1.2, 0.0, -bodyLength * 0.25);
+    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(-wingLength * 0.5, 0.0, 0.0);
+    glTexCoord2f(1.0, 0.0);
+    glVertex3f(wingLength * 0.5, 0.0, 0.0);
+    glTexCoord2f(1.0, 1.0);
+    glVertex3f(wingLength * 0.5, wingWidth, 0.0);
+    glTexCoord2f(0.0, 1.0);
+    glVertex3f(-wingLength * 0.5, wingWidth, 0.0);
+    glEnd();
     glPopMatrix();
 
-    // Engines of the spacecraft
+    // Right wing
     glPushMatrix();
-    glColor3f(1.0, 0.0, 0.0); // Red color for the engines
-    // Left engine
-    glPushMatrix();
-    glTranslatef(-bodyRadius * 0.8, 0.0, -bodyLength * 0.5);
-    glutSolidSphere(bodyRadius * 0.4, 20, 20);
+    glTranslatef(bodyRadius * 1.2, 0.0, -bodyLength * 0.25);
+    glRotatef(-90.0, 1.0, 0.0, 0.0);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0, 0.0);
+    glVertex3f(-wingLength * 0.5, 0.0, 0.0);
+    glTexCoord2f(1.0, 0.0);
+    glVertex3f(wingLength * 0.5, 0.0, 0.0);
+    glTexCoord2f(1.0, 1.0);
+    glVertex3f(wingLength * 0.5, wingWidth, 0.0);
+    glTexCoord2f(0.0, 1.0);
+    glVertex3f(-wingLength * 0.5, wingWidth, 0.0);
+    glEnd();
     glPopMatrix();
-    // Right engine
+
+    glDisable(GL_TEXTURE_2D);
+
+    glColor3f(1.0, 1.0, 1.0);
+}
+
+// Function to draw a missile projectile
+void drawMissile(GLfloat bodyRadius, GLfloat bodyLength, GLfloat noseLength) {
+    glColor3f(1.0f, 1.0f, 0.0f); // Yellow color for the missile
+    // Draw missile body (cylinder)
     glPushMatrix();
-    glTranslatef(bodyRadius * 0.8, 0.0, -bodyLength * 0.5);
-    glutSolidSphere(bodyRadius * 0.4, 20, 20);
+    glTranslatef(0.0f, 0.0f, -bodyLength * 0.5f);
+    GLUquadric *bodyQuadric = gluNewQuadric();
+    gluQuadricDrawStyle(bodyQuadric, GLU_FILL);
+    gluCylinder(bodyQuadric, bodyRadius, bodyRadius, bodyLength, 10, 10);
+    gluDeleteQuadric(bodyQuadric);
     glPopMatrix();
+
+    // Draw missile nose (cone)
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, bodyLength * 0.5f);
+    glRotatef(180, 0.0, 1.0, 0.0);
+    GLUquadric *noseQuadric = gluNewQuadric();
+    gluQuadricDrawStyle(noseQuadric, GLU_FILL);
+    gluCylinder(noseQuadric, 0.0f, bodyRadius, noseLength, 10, 10);
+    gluDeleteQuadric(noseQuadric);
     glPopMatrix();
 
     glColor3f(1.0, 1.0, 1.0);
 }
+
+// Function to draw a health sphere with a plus sign inside
+void drawHealthSphere(GLfloat radius) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    
+    glColor4f(0.0f, 1.0f, 0.0f, 0.5f); // Green color with 50% transparency for the health sphere
+    glutSolidSphere(radius, 20, 20);
+
+    // Disable depth test temporarily
+    glDisable(GL_DEPTH_TEST);
+
+    // Draw a plus sign inside the sphere
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // White color for the plus sign with full opacity
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 0.0f); // Position the plus sign at the center
+    glBegin(GL_QUADS);
+    glVertex3f(-radius * 0.1f, radius * 0.3f, 0.0f); // Top-left
+    glVertex3f(radius * 0.1f, radius * 0.3f, 0.0f);  // Top-right
+    glVertex3f(radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-right
+    glVertex3f(-radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-left
+    glEnd();
+    glBegin(GL_QUADS);
+    glVertex3f(-radius * 0.3f, radius * 0.1f, 0.0f); // Top-left
+    glVertex3f(radius * 0.3f, radius * 0.1f, 0.0f);  // Top-right
+    glVertex3f(radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-right
+    glVertex3f(-radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-left
+    glEnd();
+    glPopMatrix();
+
+    // Enable depth test back
+    glEnable(GL_DEPTH_TEST);
+
+    glDisable(GL_BLEND);
+
+    glColor3f(1.0, 1.0, 1.0);
+}
+
+// Function to draw a damage sphere with a flame-like shape inside
+void drawDamageSphere(GLfloat radius) {
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    glColor4f(1.0f, 0.0f, 0.0f, 0.5f); // Red color with 50% transparency for the damage sphere
+    glutSolidSphere(radius, 20, 20);
+
+    // Disable depth test temporarily
+    glDisable(GL_DEPTH_TEST);
+
+    // Draw a flame-like shape inside the sphere
+    glColor4f(1.0f, 0.5f, 0.0f, 1.0f); // Orange color for the flame with full opacity
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, 0.0f); // Position the flame at the center
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0.0f, radius * 0.5f, 0.0f); // Top
+    glVertex3f(-radius * 0.2f, -radius * 0.3f, 0.0f); // Bottom-left
+    glVertex3f(radius * 0.2f, -radius * 0.3f, 0.0f); // Bottom-right
+    glEnd();
+    glEnd();
+    glPopMatrix();
+
+    // Enable depth test back
+    glEnable(GL_DEPTH_TEST);
+
+    glDisable(GL_BLEND);
+
+    glColor3f(1.0, 1.0, 1.0);
+}
+
 
 // Drawing routine
 void drawScene(void) {
@@ -170,14 +290,36 @@ void drawScene(void) {
     drawCelestialBody(0.2, moonTexture); // Radius of Moon: 0.2
     glPopMatrix();
 
-    // Draw the spacecraft
+    // Draw the spacecrafts
     glPushMatrix();
     glTranslatef(15.0, 0.0, 5.0); // Position of the spacecraft
     drawSpacecraft(1.0, 2.0, 1.0, 0.5); // Adjust the parameters as needed
     glPopMatrix();
 
+    glPushMatrix();
+    glTranslatef(15.0, 0.0, -5.0); // Position of the spacecraft
+    drawSpacecraft(1.0, 2.0, 1.0, 0.5); // Adjust the parameters as needed
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(20.0, 0.0, 5.0); // Position of the missle
+    drawMissile(0.1, 0.2, 0.08); // Adjust the parameters as needed
+    glPopMatrix();
+
+    glPushMatrix();
+    glTranslatef(25.0, 0.0, 5.0); // Position of the health sphere
+    drawHealthSphere(0.3); // Adjust the parameters as needed
+    glPopMatrix();
+
+
+    glPushMatrix();
+    glTranslatef(30.0, 0.0, 5.0); // Position of the damage sphere
+    drawDamageSphere(0.3); // Adjust the parameters as needed
+    glPopMatrix();
+
     glutSwapBuffers();
 }
+
 
 // Initialization routine
 void setup(void) {
