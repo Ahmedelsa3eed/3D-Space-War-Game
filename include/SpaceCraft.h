@@ -1,9 +1,9 @@
 #ifndef SPACECRAFT_H
 #define SPACECRAFT_H
 
-#include "Drawable.h" // Assuming Drawable.h contains the interface definition
+#include "IDrawable.h" // Assuming IDrawable.h contains the interface definition
 
-class SpaceCraft : public Drawable {
+class SpaceCraft : public IDrawable {
 private:
     GLfloat health; // Health of the spacecraft (0 to 100)
     GLfloat position[3]; // Position of the spacecraft (x, y, z)
@@ -23,7 +23,7 @@ public:
     // Setter for position
     void setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos);
 
-    // Draw function from the Drawable interface
+    // Draw function from the IDrawable interface
     virtual void draw() const override;
 };
 

@@ -3,9 +3,9 @@
 
 #include <GL/glew.h>
 #include <GL/freeglut.h>
-#include "Drawable.h"
+#include "IDrawable.h"
 
-class CelestialObject : public Drawable {
+class CelestialObject : public IDrawable {
 private:
     GLfloat position[3]; // Position of the celestial object
 
@@ -25,6 +25,5 @@ public:
     // Setter method for position
     void setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos);
 };
-
 
 #endif

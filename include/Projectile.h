@@ -1,15 +1,31 @@
-#pragma once
-#include "IDrawable.h"
+#ifndef PROJECTILE_H
+#define PROJECTILE_H
+
+#include "IDrawable.h" // Assuming IDrawable.h contains the interface definition
 #include "Point.h"
 
-class Projectile : public IDrawable
-{
-public:
-    const int damage;
-    const Point source;
-    const Point direction;
-    const Point position;
+class Projectile : public IDrawable {
+private:
+    GLfloat damage;
+    Point source;
+    Point direction;
+    Point position;
 
-    Projectile(const int damage, const Point &source, const Point &direction);
-    void draw();
+public:
+    // Constructor
+    Projectile(GLfloat dmg, Point source, Point direction);
+
+    // Setter for position
+    void setPosition(Point position);
+
+    // Setter for damage
+    void setDamage(GLfloat dmg);
+
+    // Getter for damage
+    GLfloat getDamage() const;
+
+    // Draw function from the IDrawable interface
+    virtual void draw() const override;
 };
+
+#endif // PROJECTILE_H

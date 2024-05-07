@@ -75,8 +75,8 @@ std::vector<SpaceCraft> createEnemySpacecrafts() {
 
 std::vector<Projectile> createProjectiles() {
     std::vector<Projectile> projectiles;
-    projectiles.emplace_back(20.0, 0.0, 5.0, 10);
-    projectiles.emplace_back(20.0, 1.0, 5.0, 10);
+    projectiles.emplace_back(10, Point(20.0, 0.0, 5.0), Point(0, 0, 0));
+    projectiles.emplace_back(10, Point(20.0, 1.0, 5.0), Point(0, 0, 0));
 
     return projectiles;
 }
@@ -88,73 +88,6 @@ std::vector<Consumable> createConsumables() {
 
     return consumables;
 }
-
-
-
-// // Function to draw a health sphere with a plus sign inside
-// void drawHealthSphere(GLfloat radius) {
-//     glEnable(GL_BLEND);
-//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//     // Disable depth test temporarily
-//     glDisable(GL_DEPTH_TEST);
-    
-//     glColor4f(0.0f, 1.0f, 0.0f, 0.5f); // Green color with 50% transparency for the health sphere
-//     glutSolidSphere(radius, 20, 20);
-
-//     // Draw a plus sign inside the sphere
-//     glColor4f(1.0f, 1.0f, 1.0f, 1.0f); // White color for the plus sign with full opacity
-//     glPushMatrix();
-//     glTranslatef(0.0f, 0.0f, 0.0f); // Position the plus sign at the center
-//     glBegin(GL_QUADS);
-//     glVertex3f(-radius * 0.1f, radius * 0.3f, 0.0f); // Top-left
-//     glVertex3f(radius * 0.1f, radius * 0.3f, 0.0f);  // Top-right
-//     glVertex3f(radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-right
-//     glVertex3f(-radius * 0.1f, -radius * 0.3f, 0.0f); // Bottom-left
-//     glEnd();
-//     glBegin(GL_QUADS);
-//     glVertex3f(-radius * 0.3f, radius * 0.1f, 0.0f); // Top-left
-//     glVertex3f(radius * 0.3f, radius * 0.1f, 0.0f);  // Top-right
-//     glVertex3f(radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-right
-//     glVertex3f(-radius * 0.3f, -radius * 0.1f, 0.0f); // Bottom-left
-//     glEnd();
-//     glPopMatrix();
-
-//     // Enable depth test back
-//     glEnable(GL_DEPTH_TEST);
-
-//     glDisable(GL_BLEND);
-
-//     glColor3f(1.0, 1.0, 1.0);
-// }
-
-// // Function to draw a damage sphere with an upgrade symbol inside
-// void drawDamageSphere(GLfloat radius) {
-//     glEnable(GL_BLEND);
-//     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//     // Disable depth test temporarily
-//     glDisable(GL_DEPTH_TEST);
-
-//     glColor4f(1.0f, 0.0f, 0.0f, 0.5f); // Red color with 50% transparency for the damage sphere
-//     glutSolidSphere(radius, 20, 20);
-
-//     // Draw an upward-pointing orange triangle inside the damage sphere
-//     glColor4f(1.0f, 0.5f, 0.0f, 1.0f); // Orange color for the triangle with full opacity
-//     glBegin(GL_TRIANGLES);
-//     glVertex3f(-radius * 0.5f, 0.0f, 0.0f); // Left point of the triangle
-//     glVertex3f(radius * 0.5f, 0.0f, 0.0f);  // Right point of the triangle
-//     glVertex3f(0.0f, radius * 0.5f, 0.0f);  // Top point of the triangle
-//     glEnd();
-
-//     // Enable depth test back
-//     glEnable(GL_DEPTH_TEST);
-
-//     glDisable(GL_BLEND);
-
-//     glColor3f(1.0, 1.0, 1.0);
-// }
-
 
 // Drawing routine
 void drawScene(void) {
