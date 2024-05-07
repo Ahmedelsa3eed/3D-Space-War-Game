@@ -1,0 +1,1 @@
+g++ -fdiagnostics-color=always -g -I ./include ./src/*.cpp ./main.cpp -o main -lSOIL -lGLEW -lglut -lGLU -lGL -lstdc++
