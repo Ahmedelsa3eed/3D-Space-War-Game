@@ -7,7 +7,11 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "${fileDirname}\\Main.cpp",  // Include Main.cpp
+                "${fileDirname}\\CelestialObject.cpp",  // CelestialObject.cpp
+                "${fileDirname}\\SpaceCraft.cpp",  // SpaceCraft.cpp
+                "${fileDirname}\\Projectile.cpp",  // Projectile.cpp
+                "${fileDirname}\\Consumable.cpp",  // Consumable.cpp
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe",
                 "-lsoil",
