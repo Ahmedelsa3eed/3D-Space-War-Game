@@ -20,7 +20,7 @@ void ProjectileManager::notifyClockTick()
 {
     for (Projectile *projectile : this->projectiles)
     {
-        projectile->setPosition(projectile->getPosition() + projectile->getDirection() * displacementPerTick);
         projectile->draw();
+        projectile->setPosition(projectile->getPosition() + projectile->getDirection() * displacementPerTick);
     }
 }
