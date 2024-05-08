@@ -1,14 +1,16 @@
 #pragma once
-#include <vector>
+#include <unordered_set>
 #include "IActionManager.h"
 #include "Projectile.h"
 
 class ProjectileManager
 {
 public:
-    std::vector<Projectile> projectiles;
+    std::unordered_set<Projectile*> projectiles;
+    float displacementPerTick;
 
     ProjectileManager(float displacementPerTick);
-    int addProjectile(Projectile projectile);
+    ~ProjectileManager();
+    void addProjectile(Projectile *projectile);
     void notifyClockTick();
 };

@@ -7,6 +7,7 @@
 #include "CelestialObject.h"
 #include "SpaceCraft.h"
 #include "Projectile.h"
+#include "ProjectileManager.h"
 #include "Consumable.h"
 
 #include <vector>
@@ -20,8 +21,9 @@ GLuint spacecraftTexture;
 std::vector<CelestialObject> celestialObjects;
 SpaceCraft playerSpacecraft;
 std::vector<SpaceCraft> enemySpacecrafts;
-std::vector<Projectile> projectiles;
 std::vector<Consumable> consumables;
+
+ProjectileManager projectileManager(0.25);
 
 // Camera position
 GLfloat cameraX = 0.0f;
@@ -58,34 +60,19 @@ std::vector<CelestialObject> createCelestialObjects() {
     celestialObjects.emplace_back(1.7, uranusTexture, 55.0, 0.0, 0.0);
     celestialObjects.emplace_back(1.4, neptuneTexture, 65.0, 0.0, 0.0);
     celestialObjects.emplace_back(0.2, moonTexture, 22.0, 0.0, 0.0);
-
     return celestialObjects;
 }
 
 std::vector<SpaceCraft> createEnemySpacecrafts() {
     std::vector<SpaceCraft> enemySpacecrafts;
     enemySpacecrafts.emplace_back(100, 15.0, 0.0, -5.0, false);
-
-    SpaceCraft enemySpacecraft;
-    enemySpacecraft.setPosition(15.0, 0.0, -10.0);
-    enemySpacecrafts.push_back(enemySpacecraft);
-
     return enemySpacecrafts;
-}
-
-std::vector<Projectile> createProjectiles() {
-    std::vector<Projectile> projectiles;
-    projectiles.emplace_back(10, Point(20.0, 0.0, 5.0), Point(0, 0, 0));
-    projectiles.emplace_back(10, Point(20.0, 1.0, 5.0), Point(0, 0, 0));
-
-    return projectiles;
 }
 
 std::vector<Consumable> createConsumables() {
     std::vector<Consumable> consumables;
     consumables.emplace_back(25.0, 0.0, 5.0, "health");
     consumables.emplace_back(30.0, 0.0, 5.0, "damage");
-
     return consumables;
 }
 
@@ -99,6 +86,7 @@ void drawScene(void) {
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
+    projectileManager.notifyClockTick();
 
     // Draw the Celestial Objects
     for (const auto& celestialObject : celestialObjects) {
@@ -111,11 +99,6 @@ void drawScene(void) {
     // Draw the enemy spacecrafts
     for (const auto& enemySpacecraft : enemySpacecrafts) {
         enemySpacecraft.draw();
-    }
-
-    // Draw Missles
-    for (const auto& projectile : projectiles) {
-        projectile.draw();
     }
 
     // Draw Consumables
@@ -135,8 +118,9 @@ void setup(void) {
     celestialObjects =  createCelestialObjects();
     playerSpacecraft = SpaceCraft(100, 15.0, 0.0, 5.0, true);
     enemySpacecrafts = createEnemySpacecrafts();
-    projectiles = createProjectiles();
     consumables = createConsumables();
+
+    projectileManager.addProjectile(new Projectile(10, Point(0, 0, 0), Point(0, 1, 0)));
 }
 
 // OpenGL window reshape routine
@@ -214,7 +198,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(0, 0);
-    glutCreateWindow("Space Wars");
+    glutCreateWindow("Space War");
     glutDisplayFunc(drawScene);
     glutReshapeFunc(resize);
     glutKeyboardFunc(keyInput);
