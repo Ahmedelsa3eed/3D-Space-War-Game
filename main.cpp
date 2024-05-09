@@ -8,6 +8,7 @@
 #include "SpaceCraft.h"
 #include "Projectile.h"
 #include "Consumable.h"
+#include "Menu.h"
 
 #include <vector>
 
@@ -30,67 +31,9 @@ GLfloat cameraZ = 50.0f;
 GLfloat cameraYaw = 0.0f; // Yaw angle (rotation around the y-axis)
 GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
-// Menu variables
-static long font = (long)GLUT_BITMAP_8_BY_13; // Font selection.
-static char theStringBuffer[15]; // String buffer.
-
-enum { EASY, HARD }; // game level
-int level = EASY;
-
-enum { SURVIVAL, TIME_ATTACK }; // game mode
-int mode = SURVIVAL;
+Menu menu;
 
 static bool started = false;
-
-// Routine to draw a bitmap character string.
-void writeBitmapString(void *font, char *string) {
-	char *c;
-	for (c = string; *c != '\0'; c++) glutBitmapCharacter(font, *c);
-}
-
-void printGameLevel() {
-	// get Game Level
-	if (level == EASY) {
-		sprintf(theStringBuffer, "%s", "Easy");
-	}
-	else {
-		sprintf(theStringBuffer, "%s", "Hard");
-	}
-	theStringBuffer[4] = '\0';
-
-	glRasterPos3f(-1.0, 1.05, -2.0);
-	writeBitmapString((void*)font, "Press 'l' to toggle the level difficulty Easy/Hard: ");
-	writeBitmapString((void*)font, theStringBuffer);
-}
-
-void printGameMode() {
-	// get Game Mode
-	if (mode == SURVIVAL) {
-		sprintf(theStringBuffer, "%s", "Survival");
-	}
-	else {
-		sprintf(theStringBuffer, "%s", "Time-attack");
-	}
-	theStringBuffer[11] = '\0';
-
-	glRasterPos3f(-1.0, 0.97, -2.0);
-	writeBitmapString((void*)font, "Press 'm' to toggle the game mode Survival/Time-attack: ");
-	writeBitmapString((void*)font, theStringBuffer);
-}
-
-void printStartGameOption() {
-    glRasterPos3f(-1.0, 0.89, -2.0);
-    writeBitmapString((void*)font, "Press 'Enter' to start the Game");
-}
-
-/// write game options to screen
-void writeMenuOptions(void) {
-	glColor3f(1.0, 1.0, 1.0);
-
-	printGameLevel();
-	printGameMode();
-    printStartGameOption();
-}
 
 // Function to load textures
 void loadTextures() {
@@ -158,7 +101,7 @@ void drawScene(void) {
 
     // Dispaly Game Options
     if (!started) {
-        writeMenuOptions();
+        menu.writeMenuOptions();
     }
 
     // Position and orient the camera
@@ -224,11 +167,11 @@ void keyInput(unsigned char key, int x, int y) {
         glutPostRedisplay();
         break;
     case 'l':
-		level = 1 - level;
+        menu.toggleLevel();
 		glutPostRedisplay();
 		break;
 	case 'm':
-		mode = 1 - mode;
+		menu.toggleMode();
 		glutPostRedisplay();
 		break;
     case 'w':
