@@ -30,6 +30,68 @@ GLfloat cameraZ = 50.0f;
 GLfloat cameraYaw = 0.0f; // Yaw angle (rotation around the y-axis)
 GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
+// Menu variables
+static long font = (long)GLUT_BITMAP_8_BY_13; // Font selection.
+static char theStringBuffer[15]; // String buffer.
+
+enum { EASY, HARD }; // game level
+int level = EASY;
+
+enum { SURVIVAL, TIME_ATTACK }; // game mode
+int mode = SURVIVAL;
+
+static bool started = false;
+
+// Routine to draw a bitmap character string.
+void writeBitmapString(void *font, char *string) {
+	char *c;
+	for (c = string; *c != '\0'; c++) glutBitmapCharacter(font, *c);
+}
+
+void printGameLevel() {
+	// get Game Level
+	if (level == EASY) {
+		sprintf(theStringBuffer, "%s", "Easy");
+	}
+	else {
+		sprintf(theStringBuffer, "%s", "Hard");
+	}
+	theStringBuffer[4] = '\0';
+
+	glRasterPos3f(-1.0, 1.05, -2.0);
+	writeBitmapString((void*)font, "Press 'l' to toggle the level difficulty Easy/Hard: ");
+	writeBitmapString((void*)font, theStringBuffer);
+}
+
+void printGameMode() {
+	// get Game Mode
+	if (mode == SURVIVAL) {
+		sprintf(theStringBuffer, "%s", "Survival");
+	}
+	else {
+		sprintf(theStringBuffer, "%s", "Time-attack");
+	}
+	theStringBuffer[11] = '\0';
+
+	glRasterPos3f(-1.0, 0.97, -2.0);
+	writeBitmapString((void*)font, "Press 'm' to toggle the game mode Survival/Time-attack: ");
+	writeBitmapString((void*)font, theStringBuffer);
+}
+
+void printStartGameOption() {
+    glRasterPos3f(-1.0, 0.89, -2.0);
+    writeBitmapString((void*)font, "Press 'Enter' to start the Game");
+}
+
+/// write game options to screen
+void writeMenuOptions(void) {
+	glColor3f(1.0, 1.0, 1.0);
+
+	printGameLevel();
+	printGameMode();
+    printStartGameOption();
+}
+
 // Function to load textures
 void loadTextures() {
     sunTexture = SOIL_load_OGL_texture("textures/sun.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
@@ -94,6 +156,11 @@ void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
+    // Dispaly Game Options
+    if (!started) {
+        writeMenuOptions();
+    }
+
     // Position and orient the camera
     glTranslatef(-cameraX, -cameraY, -cameraZ);
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
@@ -144,13 +211,26 @@ void resize(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(45.0, (double)w / (double)h, 1.0, 10000.0); // Perspective projection
+    gluPerspective(60.0, (double)w / (double)h, 1.0, 10000.0); // Perspective projection
     glMatrixMode(GL_MODELVIEW);
 }
 
 // Keyboard input processing routine
 void keyInput(unsigned char key, int x, int y) {
     switch (key) {
+    // Menu buttons
+    case 13: // Start on Enter
+        started = true;
+        glutPostRedisplay();
+        break;
+    case 'l':
+		level = 1 - level;
+		glutPostRedisplay();
+		break;
+	case 'm':
+		mode = 1 - mode;
+		glutPostRedisplay();
+		break;
     case 'w':
         cameraZ -= 1.0f; // Move forward
         break;
@@ -212,7 +292,7 @@ int main(int argc, char **argv) {
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(500, 500);
+    glutInitWindowSize(800, 800);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Space Wars");
     glutDisplayFunc(drawScene);
