@@ -4,6 +4,7 @@
 class HealthBar {
 public:
     void draw(float health);
+    void drawEnemyHealthBar(float health);
 };
 
 #endif

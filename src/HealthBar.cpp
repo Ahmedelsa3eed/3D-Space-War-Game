@@ -53,3 +53,29 @@ void HealthBar::draw(float health) {
 
     glColor3f(1.0f, 1.0f, 1.0f);
 }
+
+void HealthBar::drawEnemyHealthBar(float health) {
+    // Set the color to green for the healthy portion of the bar
+    glColor3f(0.0f, 1.0f, 0.0f);
+    
+    // Draw the healthy portion of the bar
+    glBegin(GL_QUADS);
+        glVertex2f(-0.9f, -0.9f); // Top left
+        glVertex2f(-0.9f + (health * 0.018f), -0.9f); // Top right
+        glVertex2f(-0.9f + (health * 0.018f), -0.85f); // Bottom right
+        glVertex2f(-0.9f, -0.85f); // Bottom left
+    glEnd();
+    
+    // Set the color to red for the damaged portion of the bar
+    glColor3f(1.0f, 0.0f, 0.0f);
+    
+    // Draw the damaged portion of the bar
+    glBegin(GL_QUADS);
+        glVertex2f(-0.9f + (health * 0.018f), -0.9f); // Top left
+        glVertex2f(0.9f, -0.9f); // Top right
+        glVertex2f(0.9f, -0.85f); // Bottom right
+        glVertex2f(-0.9f + (health * 0.018f), -0.85f); // Bottom left
+    glEnd();
+
+    glColor3f(1.0f, 1.0f, 1.0f);
+}
