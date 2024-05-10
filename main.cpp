@@ -140,14 +140,14 @@ void drawScene(void) {
 	glLineWidth(2.0);
     // horizontal line
     glBegin(GL_LINES);
-    glVertex3f(-5.0, 2.85, -5.0); // Starting point
-    glVertex3f(5.0, 2.85, -5.0);  // Ending point
+    glVertex3f(-5.0, 2.85, -5.0); 
+    glVertex3f(5.0, 2.85, -5.0);  
     glEnd();
 
     // vertical line
     glBegin(GL_LINES);
-    glVertex3f(-5.0, -5.0, -5.0); // Starting point
-    glVertex3f(-5.0, 5.0, -5.0);  // Ending point
+    glVertex3f(-5.0, -5.0, -5.0); 
+    glVertex3f(-5.0, 5.0, -5.0);  
     glEnd();
     glLineWidth(1.0);
 
