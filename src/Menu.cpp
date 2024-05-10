@@ -4,7 +4,7 @@
 #include <GL/freeglut.h>
 
 Menu::Menu() {
-    font = (long)GLUT_BITMAP_8_BY_13;
+    font = 3;
     level = EASY;
     mode = SURVIVAL;
 }

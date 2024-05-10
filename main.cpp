@@ -88,7 +88,14 @@ void drawScene(void) {
 
     // Dispaly Game Options
     if (!started) {
+        cameraY = 20.0f;
+        cameraX = 0.0f;
+        cameraZ = 50.0f;
+        cameraYaw = 0.0f;
+        cameraPitch = 0.0f;
         menu.writeMenuOptions();
+        glutSwapBuffers();
+        return;
     }
 
     // Position and orient the camera
@@ -219,7 +226,7 @@ int main(int argc, char **argv) {
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(800, 800);
+    glutInitWindowSize(800, 600);
     glutInitWindowPosition(0, 0);
     glutCreateWindow("Space War");
     glutDisplayFunc(drawScene);
