@@ -4,7 +4,8 @@
 #include "IDrawable.h" // Assuming IDrawable.h contains the interface definition
 #include "Point.h"
 
-class Projectile : public IDrawable {
+class Projectile : public IDrawable
+{
 private:
     GLfloat damage;
     Point source;
@@ -14,6 +15,10 @@ private:
 public:
     // Constructor
     Projectile(GLfloat dmg, Point source, Point direction);
+
+    Point getPosition();
+
+    Point getDirection();
 
     // Setter for position
     void setPosition(Point position);
@@ -26,6 +31,13 @@ public:
 
     // Draw function from the IDrawable interface
     virtual void draw() const override;
+
+    bool operator==(const Projectile &other) const;
+
+    struct HashFunction
+    {
+        size_t operator()(const Projectile &projectile) const;
+    };
 };
 
 #endif // PROJECTILE_H
