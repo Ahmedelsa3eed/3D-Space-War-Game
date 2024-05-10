@@ -8,7 +8,7 @@ private:
 
 public:
 
-    long font;                // Font selection.
+    void *font;                // Font selection.
 
     enum { EASY, HARD };             // game level
     int level;
@@ -28,11 +28,11 @@ public:
 
     void writeBitmapString(void *font, char *string);
 
-    void printGameLevel();
+    void printGameLevel(float x, float y, float z);
 
-    void printGameMode();
+    void printGameMode(float x, float y, float z);
 
-    void printStartGameOption();
+    void printStartGameOption(float x, float y, float z);
 
     void writeMenuOptions(void);
 };

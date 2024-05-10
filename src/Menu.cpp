@@ -4,7 +4,7 @@
 #include <GL/freeglut.h>
 
 Menu::Menu() {
-    font = (long)GLUT_BITMAP_8_BY_13;
+    font = GLUT_BITMAP_8_BY_13;
     level = EASY;
     mode = SURVIVAL;
 }
@@ -14,7 +14,7 @@ void Menu::writeBitmapString(void *font, char *string) {
 	for (c = string; *c != '\0'; c++) glutBitmapCharacter(font, *c);
 }
 
-void Menu::printGameLevel() {
+void Menu::printGameLevel(float x, float y, float z) {
 	// get Game Level
 	if (level == EASY) {
 		sprintf(theStringBuffer, "%s", "Easy");
@@ -24,12 +24,12 @@ void Menu::printGameLevel() {
 	}
 	theStringBuffer[4] = '\0';
 
-	glRasterPos3f(-1.0, 1.05, -2.0);
+	glRasterPos3f(x, y, z);
 	writeBitmapString((void*)font, "Press 'l' to toggle the level difficulty Easy/Hard: ");
 	writeBitmapString((void*)font, theStringBuffer);
 }
 
-void Menu::printGameMode() {
+void Menu::printGameMode(float x, float y, float z) {
 	// get Game Mode
 	if (mode == SURVIVAL) {
 		sprintf(theStringBuffer, "%s", "Survival");
@@ -39,13 +39,13 @@ void Menu::printGameMode() {
 	}
 	theStringBuffer[11] = '\0';
 
-	glRasterPos3f(-1.0, 0.97, -2.0);
+	glRasterPos3f(x, y, z);
 	writeBitmapString((void*)font, "Press 'm' to toggle the game mode Survival/Time-attack: ");
 	writeBitmapString((void*)font, theStringBuffer);
 }
 
-void Menu::printStartGameOption() {
-    glRasterPos3f(-1.0, 0.89, -2.0);
+void Menu::printStartGameOption(float x, float y, float z) {
+    glRasterPos3f(x, y, z);
     writeBitmapString((void*)font, "Press 'Enter' to start the Game");
 }
 
@@ -53,9 +53,9 @@ void Menu::printStartGameOption() {
 void Menu::writeMenuOptions(void) {
 	glColor3f(1.0, 1.0, 1.0);
 
-	printGameLevel();
-	printGameMode();
-    printStartGameOption();
+	printGameLevel(-1.0, 0.1, -2.0);
+	printGameMode(-1.0, 0.02, -2.0);
+    printStartGameOption(-1.0, -0.06, -2.0);
 }
 
 int Menu::getLevel() {
