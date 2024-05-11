@@ -67,6 +67,7 @@ void CelestialObject::animateMoon() {
     float xRelativeEarth = 2.0;
     float yRelativeEarth = 0.0;
     float zRelativeEarth = 0.0;
+    glRotatef(45, 0.0, 0.0, 1.0);
     glRotatef(latAngle*12, 0.0, 1.0, 0.0);
     glTranslatef(xRelativeEarth, yRelativeEarth, zRelativeEarth);
     drawMoon();

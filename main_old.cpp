@@ -88,6 +88,9 @@ std::vector<Consumable> createConsumables() {
 // Drawing routine
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Beg	in Main viewport.
+    glViewport(0, 0, width, height);//demo
+    glLoadIdentity();
 
     // Dispaly Game Options
     if (!started) {
@@ -100,10 +103,6 @@ void drawScene(void) {
         glutSwapBuffers();
         return;
     }
-
-    // Begin Main viewport.
-    glViewport(0, 0, width, height);
-    glLoadIdentity();
 
     // Position and orient the camera
     glTranslatef(-cameraX, -cameraY, -cameraZ);
@@ -132,16 +131,8 @@ void drawScene(void) {
 
     
 
-    // Begin Bottom Rit viewport.
-
-    // Enable scissor testing
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(width-260, 20, 240, 180);
-    
-    // Clear the scissor region to allow drawing in the remaining area
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	glViewport(width-260, 20, 240, 180);
+    // Begin Bottom left viewport.
+	glViewport(width-240, 0, 240, 180);
     glLoadIdentity();
     
     // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
@@ -149,27 +140,14 @@ void drawScene(void) {
 	glLineWidth(2.0);
     // horizontal line
     glBegin(GL_LINES);
-    glVertex3f(-5.5, 2.85, -5.0); 
-    glVertex3f(10.0, 2.85, -5.0);  
-    glEnd();
-
-    // horizontal line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, -2.85, -5.0); 
-    glVertex3f(10.0, -2.85, -5.0);  
+    glVertex3f(-5.0, 2.85, -5.0); 
+    glVertex3f(5.0, 2.85, -5.0);  
     glEnd();
 
     // vertical line
     glBegin(GL_LINES);
-    glVertex3f(-5.5, -5.0, -5.0); 
-    glVertex3f(-5.5, 5.0, -5.0);  
-    glEnd();
-    glLineWidth(1.0);
-
-    // vertical line
-    glBegin(GL_LINES);
-    glVertex3f(5.5, -5.0, -5.0); 
-    glVertex3f(5.5, 5.0, -5.0);  
+    glVertex3f(-5.0, -5.0, -5.0); 
+    glVertex3f(-5.0, 5.0, -5.0);  
     glEnd();
     glLineWidth(1.0);
 
@@ -202,9 +180,6 @@ void drawScene(void) {
     for (const auto& consumable : consumables) {
         consumable.draw();
     }
-
-    // Disable scissor testing to allow drawing in the remaining area of the screen
-    glDisable(GL_SCISSOR_TEST);
 
     glutSwapBuffers();
 }
