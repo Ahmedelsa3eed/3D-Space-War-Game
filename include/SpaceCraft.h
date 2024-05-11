@@ -23,6 +23,11 @@ public:
     // Setter for position
     void setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos);
 
+    GLfloat getPositionX() const { return position[0]; }
+    GLfloat getPositionY() const { return position[1]; }
+    GLfloat getPositionZ() const { return position[2]; }
+    GLfloat getHealth() const { return health; }
+
     // Draw function from the IDrawable interface
     virtual void draw() const override;
 };

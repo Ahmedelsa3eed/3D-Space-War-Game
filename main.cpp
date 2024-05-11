@@ -10,6 +10,7 @@
 #include "ProjectileManager.h"
 #include "Consumable.h"
 #include "Menu.h"
+#include "HealthBar.h"
 
 #include <vector>
 
@@ -34,6 +35,7 @@ GLfloat cameraYaw = 0.0f; // Yaw angle (rotation around the y-axis)
 GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
 Menu menu;
+HealthBar healthBar;
 
 static bool started = false;
 
@@ -86,7 +88,7 @@ void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glLoadIdentity();
 
-    // Dispaly Game Options
+    // // Dispaly Game Options
     if (!started) {
         cameraY = 20.0f;
         cameraX = 0.0f;
@@ -103,6 +105,9 @@ void drawScene(void) {
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
+    // Draw the health bar
+    healthBar.draw(50.0f);
+    
     projectileManager.notifyClockTick();
 
     // Draw the Celestial Objects
