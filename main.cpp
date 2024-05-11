@@ -36,7 +36,7 @@ GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
 Menu menu;
 
-static bool started = true;
+static bool started = false;
 
 // Function to load textures
 void loadTextures() {
@@ -84,12 +84,12 @@ std::vector<Consumable> createConsumables() {
 
 void detectProjectileCollision() {
     for (Projectile *projectile : projectileManager.projectiles) {
-        /*if (playerSpacecraft.boundingSphere.overlaps(projectile->boundingSphere)) {
+        if (playerSpacecraft.boundingSphere.overlaps(projectile->boundingSphere)) {
             playerSpacecraft.useProjectile(*projectile);
             projectileManager.projectiles.erase(projectile);
             free(projectile);
             continue;
-        }*/
+        }
         for (auto& enemySpacecraft : enemySpacecrafts) {
             enemySpacecraft.updateBB();
             bool coll = enemySpacecraft.overlaps(projectile->boundingSphere);
@@ -162,7 +162,6 @@ void setup(void) {
     consumables = createConsumables();
 
     //projectileManager.addProjectile(new Projectile(10, Point(0, 0, 0), Point(0, 1, 0)));
-    //projectileManager.addProjectile(new Projectile(10, Point(0, 0, 0), Point(0, 0, 1)));
 }
 
 // OpenGL window reshape routine
@@ -229,10 +228,7 @@ std::pair<bool, SpaceCraft> detectCollision(SpaceCraft plSpace) {
         else {
             it++;
         }
-}
-
-return {false, plSpace};
-
+    }
     return {false, plSpace};
 }
 
@@ -343,7 +339,7 @@ void mouseClick(int button, int state, int x, int y) {
         Point source = Point(cameraX, cameraY, cameraZ);
         Point dist = Point(posX - cameraX, posY - cameraY, posZ - cameraZ);
         Projectile *proj = new Projectile(10, source, dist);
-        playerSpacecraft.shoot(projectileManager, proj);
+        playerSpacecraft.shoot(&projectileManager, proj);
         
     }
 }

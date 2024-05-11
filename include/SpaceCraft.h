@@ -51,7 +51,7 @@ public:
     void useConsumable(Consumable cons);
     void useProjectile(Projectile proj);
 
-    void shoot(ProjectileManager manager, Projectile *proj);
+    void shoot(ProjectileManager *manager, Projectile *proj);
 
     // Draw function from the IDrawable interface
     virtual void draw() const override;

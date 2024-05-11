@@ -28,6 +28,7 @@ void SpaceCraft::setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos) {
     position.x = xPos;
     position.y = yPos;
     position.z = zPos;
+    updateBB();
 }
 
 Point SpaceCraft::getPosition() {
@@ -39,8 +40,8 @@ GLfloat SpaceCraft::getHealth() {
     return this->health;
 }
 
-void SpaceCraft::shoot(ProjectileManager manager, Projectile *proj) {
-    manager.addProjectile(proj);
+void SpaceCraft::shoot(ProjectileManager *manager, Projectile *proj) {
+    manager->addProjectile(proj);
 }
 
 void SpaceCraft::setDamage(GLfloat dmg) {
