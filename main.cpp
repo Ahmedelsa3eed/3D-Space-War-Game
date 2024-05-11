@@ -11,6 +11,7 @@
 #include "Consumable.h"
 #include "Menu.h"
 #include "globals.h"
+#include "HealthBar.h"
 
 #include <vector>
 
@@ -40,6 +41,7 @@ GLfloat cameraYaw = 0.0f; // Yaw angle (rotation around the y-axis)
 GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
 Menu menu;
+HealthBar healthBar;
 
 static bool started = false;
 
@@ -92,7 +94,7 @@ void drawScene(void) {
     glViewport(0, 0, width, height);//demo
     glLoadIdentity();
 
-    // Dispaly Game Options
+    // // Dispaly Game Options
     if (!started) {
         cameraY = 20.0f;
         cameraX = 0.0f;
@@ -109,6 +111,9 @@ void drawScene(void) {
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
+    // Draw the health bar
+    healthBar.draw(50.0f);
+    
     projectileManager.notifyClockTick();
 
     // Animate the Celestial Objects
