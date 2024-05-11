@@ -15,16 +15,14 @@
 
 #include <vector>
 
-const unsigned int CLOCK_TICK_PERIOD = 50;
+const unsigned int CLOCK_TICK_PERIOD = 30;
 
 // Global variables
 GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, moonTexture;
 GLuint spacecraftTexture;
-static int width, height; // Size of the OpenGL window.
-static int isAnimate = 0; 
-static int animationPeriod = 50; // Time interval between frames.
-float latAngle = 0;   // Definition
-float longAngle = 0;  // Definition
+static int width, height;        // Size of the OpenGL window.
+float latAngle = 0;              // Definition
+float longAngle = 0;             // Definition
 
 std::vector<CelestialObject> celestialObjects;
 SpaceCraft playerSpacecraft;
@@ -37,7 +35,7 @@ ProjectileManager projectileManager(0.25);
 GLfloat cameraX = 0.0f;
 GLfloat cameraY = 20.0f;
 GLfloat cameraZ = 50.0f;
-GLfloat cameraYaw = 0.0f; // Yaw angle (rotation around the y-axis)
+GLfloat cameraYaw = 0.0f;   // Yaw angle (rotation around the y-axis)
 GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
 
 Menu menu;
@@ -46,7 +44,8 @@ HealthBar healthBar;
 static bool started = false;
 
 // Function to load textures
-void loadTextures() {
+void loadTextures()
+{
     sunTexture = SOIL_load_OGL_texture("textures/sun.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     mercuryTexture = SOIL_load_OGL_texture("textures/mercury.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     venusTexture = SOIL_load_OGL_texture("textures/venus.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
@@ -60,7 +59,8 @@ void loadTextures() {
     SpaceCraft::texture = spacecraftTexture;
 }
 
-std::vector<CelestialObject> createCelestialObjects() {
+std::vector<CelestialObject> createCelestialObjects()
+{
     std::vector<CelestialObject> celestialObjects;
     celestialObjects.emplace_back(5.0, sunTexture, 0.0, 0.0, 0.0);
     celestialObjects.emplace_back(0.5, mercuryTexture, 10.0, 0.0, 0.0);
@@ -74,22 +74,26 @@ std::vector<CelestialObject> createCelestialObjects() {
     return celestialObjects;
 }
 
-std::vector<SpaceCraft> createEnemySpacecrafts() {
+std::vector<SpaceCraft> createEnemySpacecrafts()
+{
     std::vector<SpaceCraft> enemySpacecrafts;
     enemySpacecrafts.emplace_back(100, 15.0, 0.0, -5.0, false);
     return enemySpacecrafts;
 }
 
-std::vector<Consumable> createConsumables() {
+std::vector<Consumable> createConsumables()
+{
     std::vector<Consumable> consumables;
     consumables.emplace_back(25.0, 0.0, 5.0, "health");
     consumables.emplace_back(30.0, 0.0, 5.0, "damage");
     return consumables;
 }
 
-void drawObjects(){
+void drawObjects()
+{
     // Animate the Celestial Objects
-    for (int i=0; i<celestialObjects.size(); ++i){
+    for (int i = 0; i < celestialObjects.size(); ++i)
+    {
         celestialObjects[i].animate(i);
     }
 
@@ -97,53 +101,58 @@ void drawObjects(){
     playerSpacecraft.draw();
 
     // Draw the enemy spacecrafts
-    for (const auto& enemySpacecraft : enemySpacecrafts) {
+    for (const auto &enemySpacecraft : enemySpacecrafts)
+    {
         enemySpacecraft.draw();
     }
 
     // Draw Consumables
-    for (const auto& consumable : consumables) {
+    for (const auto &consumable : consumables)
+    {
         consumable.draw();
     }
 }
 
-void drawViewPortBorder(){
+void drawViewPortBorder()
+{
     // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(2.0);
+    glColor3f(1.0, 1.0, 1.0);
+    glLineWidth(2.0);
     // horizontal line
     glBegin(GL_LINES);
-    glVertex3f(-5.5, 2.85, -5.0); 
-    glVertex3f(10.0, 2.85, -5.0);  
+    glVertex3f(-5.5, 2.85, -5.0);
+    glVertex3f(10.0, 2.85, -5.0);
     glEnd();
 
     // horizontal line
     glBegin(GL_LINES);
-    glVertex3f(-5.5, -2.85, -5.0); 
-    glVertex3f(10.0, -2.85, -5.0);  
+    glVertex3f(-5.5, -2.85, -5.0);
+    glVertex3f(10.0, -2.85, -5.0);
     glEnd();
 
     // vertical line
     glBegin(GL_LINES);
-    glVertex3f(-5.5, -5.0, -5.0); 
-    glVertex3f(-5.5, 5.0, -5.0);  
+    glVertex3f(-5.5, -5.0, -5.0);
+    glVertex3f(-5.5, 5.0, -5.0);
     glEnd();
     glLineWidth(1.0);
 
     // vertical line
     glBegin(GL_LINES);
-    glVertex3f(5.5, -5.0, -5.0); 
-    glVertex3f(5.5, 5.0, -5.0);  
+    glVertex3f(5.5, -5.0, -5.0);
+    glVertex3f(5.5, 5.0, -5.0);
     glEnd();
-    glLineWidth(1.0);   
+    glLineWidth(1.0);
 }
 
 // Drawing routine
-void drawScene(void) {
+void drawScene(void)
+{
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // // Dispaly Game Options
-    if (!started) {
+    if (!started)
+    {
         cameraY = 20.0f;
         cameraX = 0.0f;
         cameraZ = 50.0f;
@@ -164,39 +173,32 @@ void drawScene(void) {
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
     // Draw the health bar
-    healthBar.draw(50.0f);
-    
+    healthBar.draw(playerSpacecraft.getHealth());
+
+    // Draw objects in the main viewport
     projectileManager.notifyClockTick();
-    
-    // Draw objects
     drawObjects();
 
-// ======================================================================================
+    // ======================================================================================
     // Begin Bottom Right viewport.
 
     // Enable scissor testing
     glEnable(GL_SCISSOR_TEST);
-    glScissor(width-260, 20, 240, 180);
-    
+    glScissor(width - 260, 20, 240, 180);
+
     // Clear the scissor region to allow drawing in the remaining area
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(width-260, 20, 240, 180);
+    glViewport(width - 260, 20, 240, 180);
     glLoadIdentity();
 
     drawViewPortBorder();
-    
+
     // Fixed camera.
-   gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-
-    // orient the camera
-    glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
-    glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
-
+    // Draw objects again inside the other viewport
     projectileManager.notifyClockTick();
-
-    // Draw objects
     drawObjects();
 
     // Disable scissor testing to allow drawing in the remaining area of the screen
@@ -205,13 +207,13 @@ void drawScene(void) {
     glutSwapBuffers();
 }
 
-
 // Initialization routine
-void setup(void) {
+void setup(void)
+{
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D rendering
-    loadTextures(); // Load textures for celestial objects
-    celestialObjects =  createCelestialObjects();
+    loadTextures();          // Load textures for celestial objects
+    celestialObjects = createCelestialObjects();
     playerSpacecraft = SpaceCraft(100, 15.0, 0.0, 5.0, true);
     enemySpacecrafts = createEnemySpacecrafts();
     consumables = createConsumables();
@@ -220,7 +222,8 @@ void setup(void) {
 }
 
 // OpenGL window reshape routine
-void resize(int w, int h) {
+void resize(int w, int h)
+{
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -228,49 +231,28 @@ void resize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 
     // Pass the size of the OpenGL window.
-	width = w;
-	height = h;
-}
-
-// Timer function.
-void animate(int value)
-{
-	if (isAnimate)
-	{
-		latAngle += 1.0;
-		if (latAngle > 360.0) latAngle -= 360.0;
-		longAngle += 10.0;
-		if (longAngle > 360.0) longAngle -= 360.0;
-
-		glutPostRedisplay();
-		glutTimerFunc(animationPeriod, animate, 1);
-	}
+    width = w;
+    height = h;
 }
 
 // Keyboard input processing routine
-void keyInput(unsigned char key, int x, int y) {
-    switch (key) {
+void keyInput(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
     // Menu buttons
     case 13: // Start on Enter
         started = true;
         glutPostRedisplay();
         break;
-    case ' ':
-		if (isAnimate) isAnimate = 0;
-		else
-		{
-			isAnimate = 1;
-			animate(1);
-		}
-		break;
     case 'l':
         menu.toggleLevel();
-		glutPostRedisplay();
-		break;
-	case 'm':
-		menu.toggleMode();
-		glutPostRedisplay();
-		break;
+        glutPostRedisplay();
+        break;
+    case 'm':
+        menu.toggleMode();
+        glutPostRedisplay();
+        break;
     case 'w':
         cameraZ -= 1.0f; // Move forward
         break;
@@ -296,11 +278,13 @@ void keyInput(unsigned char key, int x, int y) {
 }
 
 // Function to handle mouse input for camera rotation
-void mouseMotion(int x, int y) {
+void mouseMotion(int x, int y)
+{
     static int lastX = -1;
     static int lastY = -1;
 
-    if (lastX == -1 || lastY == -1) {
+    if (lastX == -1 || lastY == -1)
+    {
         lastX = x;
         lastY = y;
         return;
@@ -312,8 +296,10 @@ void mouseMotion(int x, int y) {
     cameraYaw += deltaX * 0.1f;
     cameraPitch += deltaY * 0.1f;
 
-    if (cameraPitch > 90.0f) cameraPitch = 90.0f;
-    if (cameraPitch < -90.0f) cameraPitch = -90.0f;
+    if (cameraPitch > 90.0f)
+        cameraPitch = 90.0f;
+    if (cameraPitch < -90.0f)
+        cameraPitch = -90.0f;
 
     lastX = x;
     lastY = y;
@@ -322,12 +308,20 @@ void mouseMotion(int x, int y) {
 // Timer function.
 void clockTick(int value)
 {
+    latAngle += 1.0;
+    if (latAngle > 360.0)
+        latAngle -= 360.0;
+    longAngle += 10.0;
+    if (longAngle > 360.0)
+        longAngle -= 360.0;
+
     glutPostRedisplay();
     glutTimerFunc(CLOCK_TICK_PERIOD, clockTick, value);
 }
 
 // Main routine
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     glutInit(&argc, argv);
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
