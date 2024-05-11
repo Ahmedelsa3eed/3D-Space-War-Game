@@ -137,7 +137,7 @@ void drawScene(void) {
 
     
 
-    // Begin Bottom Rit viewport.
+    // Begin Bottom Right viewport.
 
     // Enable scissor testing
     glEnable(GL_SCISSOR_TEST);
