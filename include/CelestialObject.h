@@ -21,6 +21,11 @@ public:
 
     // Function to draw the celestial object
     virtual void draw() const override;
+    virtual void drawMoon();
+
+    // Function to animate the celestial object
+    virtual void animate(int i);
+    virtual void animateMoon();
 
     // Setter method for position
     void setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos);

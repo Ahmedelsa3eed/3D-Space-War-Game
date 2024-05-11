@@ -10,6 +10,7 @@
 #include "ProjectileManager.h"
 #include "Consumable.h"
 #include "Menu.h"
+#include "globals.h"
 #include "HealthBar.h"
 
 #include <vector>
@@ -19,6 +20,11 @@ const unsigned int CLOCK_TICK_PERIOD = 50;
 // Global variables
 GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, moonTexture;
 GLuint spacecraftTexture;
+static int width, height; // Size of the OpenGL window.
+static int isAnimate = 0; 
+static int animationPeriod = 100; // Time interval between frames.
+float latAngle = 0;   // Definition
+float longAngle = 0;  // Definition
 
 std::vector<CelestialObject> celestialObjects;
 SpaceCraft playerSpacecraft;
@@ -50,7 +56,6 @@ void loadTextures() {
     saturnTexture = SOIL_load_OGL_texture("textures/saturn.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     uranusTexture = SOIL_load_OGL_texture("textures/uranus.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     neptuneTexture = SOIL_load_OGL_texture("textures/neptune.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
-    moonTexture = SOIL_load_OGL_texture("textures/moon.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     spacecraftTexture = SOIL_load_OGL_texture("textures/spacecraft.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     SpaceCraft::texture = spacecraftTexture;
 }
@@ -66,7 +71,6 @@ std::vector<CelestialObject> createCelestialObjects() {
     celestialObjects.emplace_back(2.0, saturnTexture, 45.0, 0.0, 0.0);
     celestialObjects.emplace_back(1.7, uranusTexture, 55.0, 0.0, 0.0);
     celestialObjects.emplace_back(1.4, neptuneTexture, 65.0, 0.0, 0.0);
-    celestialObjects.emplace_back(0.2, moonTexture, 22.0, 0.0, 0.0);
     return celestialObjects;
 }
 
@@ -86,7 +90,6 @@ std::vector<Consumable> createConsumables() {
 // Drawing routine
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glLoadIdentity();
 
     // // Dispaly Game Options
     if (!started) {
@@ -100,6 +103,10 @@ void drawScene(void) {
         return;
     }
 
+    // Begin Main viewport.
+    glViewport(0, 0, width, height);
+    glLoadIdentity();
+
     // Position and orient the camera
     glTranslatef(-cameraX, -cameraY, -cameraZ);
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
@@ -110,9 +117,9 @@ void drawScene(void) {
     
     projectileManager.notifyClockTick();
 
-    // Draw the Celestial Objects
-    for (const auto& celestialObject : celestialObjects) {
-        celestialObject.draw();
+    // Animate the Celestial Objects
+    for (int i=0; i<celestialObjects.size(); ++i){
+        celestialObjects[i].animate(i);
     }
 
     // Draw the player spacecraft
@@ -127,6 +134,82 @@ void drawScene(void) {
     for (const auto& consumable : consumables) {
         consumable.draw();
     }
+
+    
+
+    // Begin Bottom Right viewport.
+
+    // Enable scissor testing
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(width-260, 20, 240, 180);
+    
+    // Clear the scissor region to allow drawing in the remaining area
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glViewport(width-260, 20, 240, 180);
+    glLoadIdentity();
+    
+    // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(2.0);
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, 2.85, -5.0); 
+    glVertex3f(10.0, 2.85, -5.0);  
+    glEnd();
+
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -2.85, -5.0); 
+    glVertex3f(10.0, -2.85, -5.0);  
+    glEnd();
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -5.0, -5.0); 
+    glVertex3f(-5.5, 5.0, -5.0);  
+    glEnd();
+    glLineWidth(1.0);
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(5.5, -5.0, -5.0); 
+    glVertex3f(5.5, 5.0, -5.0);  
+    glEnd();
+    glLineWidth(1.0);
+
+    // Fixed camera.
+   gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+
+    // orient the camera
+    glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
+    glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
+
+    projectileManager.notifyClockTick();
+
+
+
+    // Animate the Celestial Objects
+    for (int i=0; i<celestialObjects.size(); ++i){
+        celestialObjects[i].animate(i);
+    }
+
+    // Draw the player spacecraft
+    playerSpacecraft.draw();
+
+    // Draw the enemy spacecrafts
+    for (const auto& enemySpacecraft : enemySpacecrafts) {
+        enemySpacecraft.draw();
+    }
+
+    // Draw Consumables
+    for (const auto& consumable : consumables) {
+        consumable.draw();
+    }
+
+    // Disable scissor testing to allow drawing in the remaining area of the screen
+    glDisable(GL_SCISSOR_TEST);
 
     glutSwapBuffers();
 }
@@ -152,6 +235,25 @@ void resize(int w, int h) {
     glLoadIdentity();
     gluPerspective(60.0, (double)w / (double)h, 1.0, 10000.0); // Perspective projection
     glMatrixMode(GL_MODELVIEW);
+
+    // Pass the size of the OpenGL window.
+	width = w;
+	height = h;
+}
+
+// Timer function.
+void animate(int value)
+{
+	if (isAnimate)
+	{
+		latAngle += 1.0;
+		if (latAngle > 360.0) latAngle -= 360.0;
+		longAngle += 10.0;
+		if (longAngle > 360.0) longAngle -= 360.0;
+
+		glutPostRedisplay();
+		glutTimerFunc(animationPeriod, animate, 1);
+	}
 }
 
 // Keyboard input processing routine
@@ -162,6 +264,14 @@ void keyInput(unsigned char key, int x, int y) {
         started = true;
         glutPostRedisplay();
         break;
+    case ' ':
+		if (isAnimate) isAnimate = 0;
+		else
+		{
+			isAnimate = 1;
+			animate(1);
+		}
+		break;
     case 'l':
         menu.toggleLevel();
 		glutPostRedisplay();
