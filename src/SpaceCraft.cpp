@@ -1,4 +1,5 @@
 #include "SpaceCraft.h"
+#include "HealthBar.h"
 #include "iostream"
 
 // Initialize the static member variable
@@ -122,6 +123,18 @@ void SpaceCraft::draw() const {
     gluDeleteQuadric(cockpitQuadric);
     glPopMatrix();
     glDisable(GL_BLEND);
+
+    // Draw the health bar
+    HealthBar healthBar;
+    glPushMatrix();
+    glTranslatef(0.0, bodyRadius * 2.0, 0.0); // Position the health bar above the spacecraft
+    healthBar.drawEnemyHealthBar(health); // Assuming healthBar.draw() takes the health value as argument
+    glPopMatrix();
+
+    // Wings of the spacecraft
+    GLfloat wingLength = bodyRadius * 2.0;
+    GLfloat wingWidth = bodyRadius * 0.4;
+    GLfloat wingHeight = bodyRadius * 0.1;
 
 
     // Left wing
