@@ -22,7 +22,7 @@ GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupi
 GLuint spacecraftTexture;
 static int width, height; // Size of the OpenGL window.
 static int isAnimate = 0; 
-static int animationPeriod = 100; // Time interval between frames.
+static int animationPeriod = 50; // Time interval between frames.
 float latAngle = 0;   // Definition
 float longAngle = 0;  // Definition
 
@@ -87,6 +87,57 @@ std::vector<Consumable> createConsumables() {
     return consumables;
 }
 
+void drawObjects(){
+    // Animate the Celestial Objects
+    for (int i=0; i<celestialObjects.size(); ++i){
+        celestialObjects[i].animate(i);
+    }
+
+    // Draw the player spacecraft
+    playerSpacecraft.draw();
+
+    // Draw the enemy spacecrafts
+    for (const auto& enemySpacecraft : enemySpacecrafts) {
+        enemySpacecraft.draw();
+    }
+
+    // Draw Consumables
+    for (const auto& consumable : consumables) {
+        consumable.draw();
+    }
+}
+
+void drawViewPortBorder(){
+    // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
+	glColor3f(1.0, 1.0, 1.0);
+	glLineWidth(2.0);
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, 2.85, -5.0); 
+    glVertex3f(10.0, 2.85, -5.0);  
+    glEnd();
+
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -2.85, -5.0); 
+    glVertex3f(10.0, -2.85, -5.0);  
+    glEnd();
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -5.0, -5.0); 
+    glVertex3f(-5.5, 5.0, -5.0);  
+    glEnd();
+    glLineWidth(1.0);
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(5.5, -5.0, -5.0); 
+    glVertex3f(5.5, 5.0, -5.0);  
+    glEnd();
+    glLineWidth(1.0);   
+}
+
 // Drawing routine
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -116,27 +167,11 @@ void drawScene(void) {
     healthBar.draw(50.0f);
     
     projectileManager.notifyClockTick();
-
-    // Animate the Celestial Objects
-    for (int i=0; i<celestialObjects.size(); ++i){
-        celestialObjects[i].animate(i);
-    }
-
-    // Draw the player spacecraft
-    playerSpacecraft.draw();
-
-    // Draw the enemy spacecrafts
-    for (const auto& enemySpacecraft : enemySpacecrafts) {
-        enemySpacecraft.draw();
-    }
-
-    // Draw Consumables
-    for (const auto& consumable : consumables) {
-        consumable.draw();
-    }
-
     
+    // Draw objects
+    drawObjects();
 
+// ======================================================================================
     // Begin Bottom Right viewport.
 
     // Enable scissor testing
@@ -148,36 +183,9 @@ void drawScene(void) {
 
 	glViewport(width-260, 20, 240, 180);
     glLoadIdentity();
+
+    drawViewPortBorder();
     
-    // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(2.0);
-    // horizontal line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, 2.85, -5.0); 
-    glVertex3f(10.0, 2.85, -5.0);  
-    glEnd();
-
-    // horizontal line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, -2.85, -5.0); 
-    glVertex3f(10.0, -2.85, -5.0);  
-    glEnd();
-
-    // vertical line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, -5.0, -5.0); 
-    glVertex3f(-5.5, 5.0, -5.0);  
-    glEnd();
-    glLineWidth(1.0);
-
-    // vertical line
-    glBegin(GL_LINES);
-    glVertex3f(5.5, -5.0, -5.0); 
-    glVertex3f(5.5, 5.0, -5.0);  
-    glEnd();
-    glLineWidth(1.0);
-
     // Fixed camera.
    gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
@@ -188,25 +196,8 @@ void drawScene(void) {
 
     projectileManager.notifyClockTick();
 
-
-
-    // Animate the Celestial Objects
-    for (int i=0; i<celestialObjects.size(); ++i){
-        celestialObjects[i].animate(i);
-    }
-
-    // Draw the player spacecraft
-    playerSpacecraft.draw();
-
-    // Draw the enemy spacecrafts
-    for (const auto& enemySpacecraft : enemySpacecrafts) {
-        enemySpacecraft.draw();
-    }
-
-    // Draw Consumables
-    for (const auto& consumable : consumables) {
-        consumable.draw();
-    }
+    // Draw objects
+    drawObjects();
 
     // Disable scissor testing to allow drawing in the remaining area of the screen
     glDisable(GL_SCISSOR_TEST);
