@@ -34,3 +34,22 @@ Phase 2:
 Skybox
 
 Level design
+
+##################################################################################################################################
+
+Saied:
+	Health bars (initial red part)
+	UI: gameover/win
+
+Mohamed:
+	User/Enemy Spacecraft movement
+	skybox
+
+Amr:
+	Enemy spacecraft shooting
+	Time attack mode
+	
+Abdelrahman:
+	Lighting of the scene and emission of objects
+
+All Phase 2 unless textures and time attack mode and lighting of the scene and emission of objects
