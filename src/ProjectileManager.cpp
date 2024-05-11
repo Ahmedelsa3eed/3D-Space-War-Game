@@ -21,6 +21,13 @@ void ProjectileManager::notifyClockTick()
     for (Projectile *projectile : this->projectiles)
     {
         projectile->draw();
+        //std::cout << "Before" << std::endl;
+        //projectile->getPosition().printPoint();
         projectile->setPosition(projectile->getPosition() + projectile->getDirection() * displacementPerTick);
+        //std::cout << "After" << std::endl;
+
+        //projectile->getPosition().printPoint();
+
+
     }
 }

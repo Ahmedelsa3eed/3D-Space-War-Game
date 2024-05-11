@@ -29,6 +29,7 @@ void Projectile::setPosition(Point newPosition)
     this->position.x = newPosition.x;
     this->position.y = newPosition.y;
     this->position.z = newPosition.z;
+    this->boundingSphere.update(newPosition, bodyLength);
 }
 
 void Projectile::setDamage(GLfloat dmg)
@@ -52,12 +53,15 @@ GLfloat Projectile::getDamage() const
     return damage;
 }
 
+void Projectile::updateBB() {
+    float radius = std::max(bodyLength, bodyRadius);
+    boundingSphere.update(position, radius);
+}
+
 void Projectile::draw() const
 {
 
-    GLfloat bodyRadius = 0.1;
-    GLfloat bodyLength = 0.2;
-    GLfloat noseLength = 0.08;
+    
 
     glColor3f(1.0f, 1.0f, 0.0f); // Yellow color for the missile
     glPushMatrix();

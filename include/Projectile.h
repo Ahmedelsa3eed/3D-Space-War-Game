@@ -11,6 +11,9 @@ private:
     Point source;
     Point direction;
     Point position;
+    GLfloat bodyRadius = 0.1;
+    GLfloat bodyLength = 0.2;
+    GLfloat noseLength = 0.08;
 
 public:
     // Constructor
@@ -31,6 +34,9 @@ public:
 
     // Draw function from the IDrawable interface
     virtual void draw() const override;
+
+    // update boundin box
+    virtual void updateBB() override;
 
     bool operator==(const Projectile &other) const;
 
