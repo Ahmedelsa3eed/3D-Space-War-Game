@@ -2,31 +2,43 @@
 #include <GL/freeglut.h>
 
 Consumable::Consumable(GLfloat xPos, GLfloat yPos, GLfloat zPos, std::string consumableType) {
-    position[0] = xPos;
-    position[1] = yPos;
-    position[2] = zPos;
+    position.x = xPos;
+    position.y = yPos;
+    position.z = zPos;
     type = consumableType;
 }
 
 // Setter method for position
 void Consumable::setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos) {
-    position[0] = xPos;
-    position[1] = yPos;
-    position[2] = zPos;
+    position.x = xPos;
+    position.y = yPos;
+    position.z = zPos;
+}
+
+Point Consumable::getPosition() {
+    return this->position;
+}
+
+std::string Consumable::getType() {
+    return this->type;
+}
+
+void Consumable::updateBB() {
+    boundingSphere.update(position, radius);
 }
 
 // Draw function for Consumable
 void Consumable::draw() const {
-    GLfloat radius = 0.2;
+    
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     glPushMatrix();
-    glTranslatef(position[0], position[1], position[2]);
+    glTranslatef(position.x, position.y, position.z);
 
     // Disable depth test temporarily
-    glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_DEPTH_TEST);
 
     if (type == "health") {
         glColor4f(0.0f, 1.0f, 0.0f, 0.5f); // Green color with 50% transparency for the health sphere
@@ -63,7 +75,7 @@ void Consumable::draw() const {
     }
 
     // Enable depth test back
-    glEnable(GL_DEPTH_TEST);
+    //glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
 
     glPopMatrix();

@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <ostream>
-
+#include <iostream>
 class Point
 {
 public:
@@ -18,6 +18,9 @@ public:
     {
         os << "Point(" << point.x << ", " << point.y << ", " << point.z << ")";
         return os;
+    }
+    void printPoint() {
+        std::cout << x << " " << y << " " << z << std::endl;
     }
     struct HashFunction
     {

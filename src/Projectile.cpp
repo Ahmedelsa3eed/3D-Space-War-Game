@@ -1,8 +1,9 @@
 #include "Projectile.h"
 #include <cmath>
 
-Projectile::Projectile(GLfloat dmg, Point source, Point direction)
+Projectile::Projectile(GLfloat dmg, bool owner, Point source, Point direction)
 {
+    this->owner = owner;
     this->damage = dmg;
     this->source = source;
     this->direction = direction;
@@ -29,6 +30,7 @@ void Projectile::setPosition(Point newPosition)
     this->position.x = newPosition.x;
     this->position.y = newPosition.y;
     this->position.z = newPosition.z;
+    this->boundingSphere.update(newPosition, bodyLength);
 }
 
 void Projectile::setDamage(GLfloat dmg)
@@ -47,17 +49,24 @@ void Projectile::setDamage(GLfloat dmg)
     }
 }
 
-GLfloat Projectile::getDamage() const
+bool Projectile::getOwner() {
+    return this->owner;
+}
+
+GLfloat Projectile::getDamage()
 {
     return damage;
+}
+
+void Projectile::updateBB() {
+    float radius = std::max(bodyLength, bodyRadius);
+    boundingSphere.update(position, radius);
 }
 
 void Projectile::draw() const
 {
 
-    GLfloat bodyRadius = 0.1;
-    GLfloat bodyLength = 0.2;
-    GLfloat noseLength = 0.08;
+    
 
     glColor3f(1.0f, 1.0f, 0.0f); // Yellow color for the missile
     glPushMatrix();
