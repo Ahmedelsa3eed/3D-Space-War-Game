@@ -14,10 +14,11 @@ private:
     GLfloat bodyRadius = 0.1;
     GLfloat bodyLength = 0.2;
     GLfloat noseLength = 0.08;
+    bool owner;
 
 public:
     // Constructor
-    Projectile(GLfloat dmg, Point source, Point direction);
+    Projectile(GLfloat dmg, bool owner, Point source, Point direction);
 
     Point getPosition();
 
@@ -30,7 +31,9 @@ public:
     void setDamage(GLfloat dmg);
 
     // Getter for damage
-    GLfloat getDamage() const;
+    GLfloat getDamage();
+
+    bool getOwner();
 
     // Draw function from the IDrawable interface
     virtual void draw() const override;

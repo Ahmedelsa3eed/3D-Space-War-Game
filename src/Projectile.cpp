@@ -1,8 +1,9 @@
 #include "Projectile.h"
 #include <cmath>
 
-Projectile::Projectile(GLfloat dmg, Point source, Point direction)
+Projectile::Projectile(GLfloat dmg, bool owner, Point source, Point direction)
 {
+    this->owner = owner;
     this->damage = dmg;
     this->source = source;
     this->direction = direction;
@@ -48,7 +49,11 @@ void Projectile::setDamage(GLfloat dmg)
     }
 }
 
-GLfloat Projectile::getDamage() const
+bool Projectile::getOwner() {
+    return this->owner;
+}
+
+GLfloat Projectile::getDamage()
 {
     return damage;
 }

@@ -77,7 +77,7 @@ void SpaceCraft::useConsumable(Consumable cons) {
 
 void SpaceCraft::useProjectile(Projectile proj) {
     float before = health;
-    health -= proj.getDamage();
+    setHealth(health - proj.getDamage());
     std::cout << "Health decreased from " << before << " to " << health << std::endl;
 
 }

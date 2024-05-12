@@ -77,6 +77,7 @@ void CelestialObject::drawMoon(){
 }
 
 void CelestialObject::animateMoon() {
+    glPushMatrix();
     float xRelativeEarth = 2.0;
     float yRelativeEarth = 0.0;
     float zRelativeEarth = 0.0;

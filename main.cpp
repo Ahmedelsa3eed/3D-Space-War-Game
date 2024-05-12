@@ -15,17 +15,19 @@
 
 #include <vector>
 #include <glm/glm.hpp>
+#include <random>
 
-const unsigned int CLOCK_TICK_PERIOD = 50;
+const unsigned int CLOCK_TICK_PERIOD = 30;
 
 // Global variables
 GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, moonTexture;
 GLuint spacecraftTexture;
 static int width, height; // Size of the OpenGL window.
-static int isAnimate = 0; 
-static int animationPeriod = 100; // Time interval between frames.
 float latAngle = 0;   // Definition
 float longAngle = 0;  // Definition
+bool gameOver = false;
+bool winner = false;
+std::string isWinner[] = {"Loser", "Winner"};
 
 std::vector<CelestialObject> celestialObjects;
 SpaceCraft playerSpacecraft;
@@ -87,23 +89,136 @@ std::vector<Consumable> createConsumables() {
     consumables.emplace_back(30.0, 0.0, 5.0, "damage");
     return consumables;
 }
+Point generate_nearby_point(const Point& point, double factor = 5.0) {
+  
+  std::mt19937 gen(time(0));
+  std::uniform_real_distribution<> dis(-factor, factor);
+
+  double offsetX = dis(gen);
+  double offsetY = dis(gen);
+  double offsetZ = dis(gen);
+
+  return Point(point.x + offsetX, point.y + offsetY, point.z + offsetZ);
+}
+void enemySpaceCraftShooting() {
+    for (SpaceCraft enemySpacecraft: enemySpacecrafts) {
+
+        Point source = enemySpacecraft.getPosition();
+        Point dis;
+        if(menu.getLevel() == menu.EASY)
+            dis = generate_nearby_point(playerSpacecraft.getPosition(), 10);
+        else 
+            dis = generate_nearby_point(playerSpacecraft.getPosition(), 5);
+        Projectile *proj = new Projectile(10, false, source, dis - source);
+        enemySpacecraft.shoot(&projectileManager, proj);
+    }
+}
+
+void drawObjects()
+{
+
+    // Animate the Celestial Objects
+    for (int i = 0; i < celestialObjects.size(); ++i)
+    {
+        celestialObjects[i].animate(i);
+    }
+
+    // Draw the player spacecraft
+    playerSpacecraft.draw();
+
+    // Draw the enemy spacecrafts
+    for (const auto &enemySpacecraft : enemySpacecrafts)
+    {
+        enemySpacecraft.draw();
+    }
+
+    // Draw Consumables
+    for (const auto &consumable : consumables)
+    {
+        consumable.draw();
+    }
+
+    
+}
+
+void endGame() {
+    bool endTime;
+    static double lastTime = 0.0;  
+    double currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+    if (currentTime - lastTime >= 60 && menu.getMode() == menu.TIME_ATTACK) {
+        lastTime = currentTime;
+        endTime = true;
+    } 
+    else {
+        endTime = false;
+    }
+    if (playerSpacecraft.getHealth() == 0 || (endTime && enemySpacecrafts.size() != 0)) {
+        gameOver = true;
+        winner = false;
+    } 
+    if (enemySpacecrafts.size() == 0) {
+        gameOver = true;
+        winner = true;
+    }
+
+    if (gameOver) std::cout << "Game Over You " << isWinner[winner] << std::endl;
+}
+
+void drawViewPortBorder()
+{
+    // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
+    glColor3f(1.0, 1.0, 1.0);
+    glLineWidth(2.0);
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, 2.85, -5.0);
+    glVertex3f(10.0, 2.85, -5.0);
+    glEnd();
+
+    // horizontal line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -2.85, -5.0);
+    glVertex3f(10.0, -2.85, -5.0);
+    glEnd();
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(-5.5, -5.0, -5.0);
+    glVertex3f(-5.5, 5.0, -5.0);
+    glEnd();
+    glLineWidth(1.0);
+
+    // vertical line
+    glBegin(GL_LINES);
+    glVertex3f(5.5, -5.0, -5.0);
+    glVertex3f(5.5, 5.0, -5.0);
+    glEnd();
+    glLineWidth(1.0);
+}
 
 void detectProjectileCollision() {
     for (Projectile *projectile : projectileManager.projectiles) {
-        if (playerSpacecraft.boundingSphere.overlaps(projectile->boundingSphere)) {
+        if (playerSpacecraft.boundingSphere.overlaps(projectile->boundingSphere) && !projectile->getOwner()) {
             playerSpacecraft.useProjectile(*projectile);
             projectileManager.projectiles.erase(projectile);
             free(projectile);
             continue;
         }
-        for (auto& enemySpacecraft : enemySpacecrafts) {
-            enemySpacecraft.updateBB();
-            bool coll = enemySpacecraft.overlaps(projectile->boundingSphere);
-            if (coll) { 
-                enemySpacecraft.useProjectile(*projectile);
+
+        for (auto it = enemySpacecrafts.begin(); it != enemySpacecrafts.end();) {
+            it->updateBB();
+            bool coll = it->overlaps(projectile->boundingSphere);
+            if (coll && projectile->getOwner()) {
+                it->useProjectile(*projectile);
                 projectileManager.projectiles.erase(projectile);
                 free(projectile);
+                if(it->getHealth() == 0){
+                    it = enemySpacecrafts.erase(it);
+                }
                 break;
+            }    
+            else {
+                it++;
             }
         }
     }
@@ -114,7 +229,8 @@ void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // // Dispaly Game Options
-    if (!started) {
+    if (!started)
+    {
         cameraY = 20.0f;
         cameraX = 0.0f;
         cameraZ = 50.0f;
@@ -125,7 +241,7 @@ void drawScene(void) {
         return;
     }
 
-    // Begin Main viewport.
+    // Begin Main viewport. 
     glViewport(0, 0, width, height);
     glLoadIdentity();
 
@@ -135,107 +251,34 @@ void drawScene(void) {
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
     // Draw the health bar
-    healthBar.draw(50.0f);
-    
-    projectileManager.notifyClockTick();
+    healthBar.draw(playerSpacecraft.getHealth());
 
+    // Draw objects in the main viewport
     detectProjectileCollision();
+    projectileManager.notifyClockTick();
+    drawObjects();
 
-    // Draw the Celestial Objects
-    for (const auto& celestialObject : celestialObjects) {
-        celestialObject.draw();
-    }
-
-    // Animate the Celestial Objects
-    for (int i=0; i<celestialObjects.size(); ++i){
-        celestialObjects[i].animate(i);
-    }
-
-    // Draw the player spacecraft
-    playerSpacecraft.draw();
-
-    // Draw the enemy spacecrafts
-    for (const auto& enemySpacecraft : enemySpacecrafts) {
-        enemySpacecraft.draw();
-    }
-
-    // Draw Consumables
-    for (const auto& consumable : consumables) {
-        consumable.draw();
-    }
-
-    
-
+    // ======================================================================================
     // Begin Bottom Right viewport.
 
     // Enable scissor testing
     glEnable(GL_SCISSOR_TEST);
-    glScissor(width-260, 20, 240, 180);
-    
+    glScissor(width - 260, 20, 240, 180);
+
     // Clear the scissor region to allow drawing in the remaining area
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glViewport(width-260, 20, 240, 180);
+    glViewport(width - 260, 20, 240, 180);
     glLoadIdentity();
-    
-    // Draw a horizontal and vertical line on the left of the viewport to separate the two viewports
-	glColor3f(1.0, 1.0, 1.0);
-	glLineWidth(2.0);
-    // horizontal line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, 2.85, -5.0); 
-    glVertex3f(10.0, 2.85, -5.0);  
-    glEnd();
 
-    // horizontal line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, -2.85, -5.0); 
-    glVertex3f(10.0, -2.85, -5.0);  
-    glEnd();
-
-    // vertical line
-    glBegin(GL_LINES);
-    glVertex3f(-5.5, -5.0, -5.0); 
-    glVertex3f(-5.5, 5.0, -5.0);  
-    glEnd();
-    glLineWidth(1.0);
-
-    // vertical line
-    glBegin(GL_LINES);
-    glVertex3f(5.5, -5.0, -5.0); 
-    glVertex3f(5.5, 5.0, -5.0);  
-    glEnd();
-    glLineWidth(1.0);
+    drawViewPortBorder();
 
     // Fixed camera.
-   gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+    gluLookAt(0.0, 10.0, 120.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 
-
-    // orient the camera
-    glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
-    glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
-
+    // Draw objects again inside the other viewport
     projectileManager.notifyClockTick();
-
-
-
-    // Animate the Celestial Objects
-    for (int i=0; i<celestialObjects.size(); ++i){
-        celestialObjects[i].animate(i);
-    }
-
-    // Draw the player spacecraft
-    playerSpacecraft.draw();
-
-    // Draw the enemy spacecrafts
-    for (const auto& enemySpacecraft : enemySpacecrafts) {
-        enemySpacecraft.draw();
-    }
-
-    // Draw Consumables
-    for (const auto& consumable : consumables) {
-        consumable.draw();
-    }
+    drawObjects();
 
     // Disable scissor testing to allow drawing in the remaining area of the screen
     glDisable(GL_SCISSOR_TEST);
@@ -250,11 +293,9 @@ void setup(void) {
     glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D rendering
     loadTextures(); // Load textures for celestial objects
     celestialObjects =  createCelestialObjects();
-    playerSpacecraft = SpaceCraft(100, 10, 15.0, 0.0, 5.0, true);
+    playerSpacecraft = SpaceCraft(100, 10, 15.0, 5.0, 5.0, true);
     enemySpacecrafts = createEnemySpacecrafts();
     consumables = createConsumables();
-
-    //projectileManager.addProjectile(new Projectile(10, Point(0, 0, 0), Point(0, 1, 0)));
 }
 
 // OpenGL window reshape routine
@@ -270,20 +311,6 @@ void resize(int w, int h) {
 	height = h;
 }
 
-// Timer function.
-void animate(int value)
-{
-	if (isAnimate)
-	{
-		latAngle += 1.0;
-		if (latAngle > 360.0) latAngle -= 360.0;
-		longAngle += 10.0;
-		if (longAngle > 360.0) longAngle -= 360.0;
-
-		glutPostRedisplay();
-		glutTimerFunc(animationPeriod, animate, 1);
-	}
-}
 
 std::pair<bool, SpaceCraft> detectCollision(SpaceCraft plSpace) {
     
@@ -347,14 +374,6 @@ void keyInput(unsigned char key, int x, int y) {
         started = true;
         glutPostRedisplay();
         break;
-    case ' ':
-		if (isAnimate) isAnimate = 0;
-		else
-		{
-			isAnimate = 1;
-			animate(1);
-		}
-		break;
     case 'l':
         menu.toggleLevel();
 		glutPostRedisplay();
@@ -403,6 +422,8 @@ void keyInput(unsigned char key, int x, int y) {
         playerSpacecraft.setDamage(re.second.getDamage());
         playerSpacecraft.setHealth(re.second.getHealth());
     }
+
+    glutPostRedisplay();
 }
 
 // Function to handle mouse input for camera rotation
@@ -432,25 +453,32 @@ void mouseMotion(int x, int y) {
 void mouseClick(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
         // Convert mouse coordinates to OpenGL viewport coordinates
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glViewport(0, 0, width, height);
+        glLoadIdentity();
+
         GLint viewport[4];
         GLdouble modelview[16], projection[16];
         GLfloat winX, winY, winZ;
         GLdouble posX, posY, posZ;
 
+        
+
         glGetDoublev(GL_MODELVIEW_MATRIX, modelview);
         glGetDoublev(GL_PROJECTION_MATRIX, projection);
         glGetIntegerv(GL_VIEWPORT, viewport);
+
 
         winX = (float)x;
         winY = (float)viewport[3] - (float)y;
         glReadPixels(x, int(winY), 1, 1, GL_DEPTH_COMPONENT, GL_FLOAT, &winZ);
 
         gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
+
         Point source = Point(cameraX, cameraY, cameraZ);
         Point dist = Point(posX - cameraX, posY - cameraY, posZ - cameraZ);
-        Projectile *proj = new Projectile(10, source, dist);
+        Projectile *proj = new Projectile(playerSpacecraft.getDamage(), true, source, dist);
         playerSpacecraft.shoot(&projectileManager, proj);
-        
     }
 }
 
@@ -459,6 +487,29 @@ void mouseClick(int button, int state, int x, int y) {
 void clockTick(int value)
 {
 
+    latAngle += 1.0;
+    if (latAngle > 360.0)
+        latAngle -= 360.0;
+    longAngle += 10.0;
+    if (longAngle > 360.0)
+        longAngle -= 360.0;
+    
+    bool secondPassed;
+    static double lastTime = 0.0;  
+    double currentTime = glutGet(GLUT_ELAPSED_TIME) / 1000.0;
+    if (currentTime - lastTime >= 1.0) {
+        lastTime = currentTime;
+        secondPassed = true;
+    } 
+    else {
+        secondPassed = false;
+    }
+
+    if (secondPassed) {
+        enemySpaceCraftShooting();
+    }
+    
+    endGame();
     glutPostRedisplay();
     glutTimerFunc(CLOCK_TICK_PERIOD, clockTick, value);
 }
