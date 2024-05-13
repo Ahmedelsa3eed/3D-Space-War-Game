@@ -1,13 +1,14 @@
 #include "SpaceCraft.h"
-#include <HealthBar.h>
-
+#include "HealthBar.h"
+#include "iostream"
 
 // Initialize the static member variable
 GLuint SpaceCraft::texture;
 
 
-SpaceCraft::SpaceCraft(GLfloat initialHealth, GLfloat xPos, GLfloat yPos, GLfloat zPos, bool isPlayer) {
+SpaceCraft::SpaceCraft(GLfloat initialHealth, GLfloat dmg, GLfloat xPos, GLfloat yPos, GLfloat zPos, bool isPlayer) {
     health = initialHealth;
+    damage = dmg;
     setPosition(xPos, yPos, zPos);
     player = isPlayer;
 }
@@ -25,9 +26,60 @@ void SpaceCraft::setHealth(GLfloat newHealth) {
 
 // Setter method for position
 void SpaceCraft::setPosition(GLfloat xPos, GLfloat yPos, GLfloat zPos) {
-    position[0] = xPos;
-    position[1] = yPos;
-    position[2] = zPos;
+    position.x = xPos;
+    position.y = yPos;
+    position.z = zPos;
+    updateBB();
+}
+
+Point SpaceCraft::getPosition() {
+    return this->position;
+}
+
+
+GLfloat SpaceCraft::getHealth() {
+    return this->health;
+}
+
+void SpaceCraft::shoot(ProjectileManager *manager, Projectile *proj) {
+    manager->addProjectile(proj);
+}
+
+void SpaceCraft::setDamage(GLfloat dmg) {
+
+    if(dmg > 100) damage = 100;
+    else if(dmg < 0) damage = 0;
+    else this->damage = dmg;
+}
+
+GLfloat SpaceCraft::getDamage() {
+    return this->damage;
+}
+
+void SpaceCraft::updateBB()
+{   
+    float radius = std::max(bodyLength / 2 + cockpitRadius, wingLength);
+    boundingSphere.update(position, radius);
+}
+
+void SpaceCraft::useConsumable(Consumable cons) {
+    if (cons.getType() == "damage") {
+        float before = damage;
+        setDamage(damage + 10);
+        std::cout << "Damage increased from " << before << " to " << this->damage << std::endl;
+    }
+    else if (cons.getType() == "health") {
+        float before = health;
+        setHealth(health + 20);
+        std::cout << "Health increased from " << before << " to " << health << std::endl;
+    }
+}
+
+void SpaceCraft::useProjectile(Projectile proj) {
+    float before = health;
+    setHealth(health - proj.getDamage());
+    std::cout << "Health decreased from " << before << " to " << health << std::endl;
+
 }
 
 void SpaceCraft::draw() const {
@@ -35,12 +87,9 @@ void SpaceCraft::draw() const {
     glBindTexture(GL_TEXTURE_2D, texture);
 
     glPushMatrix();
-    glTranslatef(position[0], position[1], position[2]);
+    glTranslatef(position.x, position.y, position.z);
 
-    GLfloat bodyRadius = 1.0;
-    GLfloat bodyLength =  2.0;
-    GLfloat cockpitRadius = 1.0;
-    GLfloat cockpitLength = 0.5;
+    
 
     // Body of the spacecraft (fuselage)
     glPushMatrix();
@@ -86,6 +135,7 @@ void SpaceCraft::draw() const {
     GLfloat wingLength = bodyRadius * 2.0;
     GLfloat wingWidth = bodyRadius * 0.4;
     GLfloat wingHeight = bodyRadius * 0.1;
+
 
     // Left wing
     glPushMatrix();
