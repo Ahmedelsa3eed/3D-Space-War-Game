@@ -42,6 +42,7 @@ Menu menu;
 HealthBar healthBar;
 
 static bool started = false;
+static bool gameOver = false;
 
 // Function to load textures
 void loadTextures()
@@ -150,7 +151,14 @@ void drawScene(void)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    // // Dispaly Game Options
+    if (gameOver)
+    {
+        menu.writeGameOver(-0.2, 0.0, -2.0);
+        glutSwapBuffers();
+        return;
+    }
+
+    // Dispaly Game Options
     if (!started)
     {
         cameraY = 20.0f;
@@ -172,8 +180,8 @@ void drawScene(void)
     glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
     glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
 
-    // Draw the health bar
-    healthBar.draw(playerSpacecraft.getHealth());
+    // Draw the player health bar
+    healthBar.drawPlayerHealthBar(playerSpacecraft.getHealth());
 
     // Draw objects in the main viewport
     projectileManager.notifyClockTick();

@@ -3,7 +3,7 @@
 #include <GL/freeglut.h>
 
 // Function to draw the health bar
-void HealthBar::draw(float health) {
+void HealthBar::drawPlayerHealthBar(float health) {
     // Set up orthographic projection
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -34,12 +34,15 @@ void HealthBar::draw(float health) {
     glVertex2f(xPos, yPos + barHeight); // Bottom left
     glEnd();
 
+    // Calculate the width of the unhealthy portion of the bar
+    float unhealthyWidth = ((100 - health) / 100.0f) * (barWidth - 2 * padding);
+
     // Set the color to red for the damaged portion of the bar
     glColor3f(1.0f, 0.0f, 0.0f);
     glBegin(GL_QUADS);
     glVertex2f(xPos + healthyWidth, yPos); // Top left
-    glVertex2f(xPos + barWidth, yPos); // Top right
-    glVertex2f(xPos + barWidth, yPos + barHeight); // Bottom right
+    glVertex2f(xPos + healthyWidth + unhealthyWidth, yPos); // Top right
+    glVertex2f(xPos + healthyWidth + unhealthyWidth, yPos + barHeight); // Bottom right
     glVertex2f(xPos + healthyWidth, yPos + barHeight); // Bottom left
     glEnd();
 
