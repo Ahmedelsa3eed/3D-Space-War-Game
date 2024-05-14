@@ -67,15 +67,15 @@ void loadTextures()
 std::vector<CelestialObject> createCelestialObjects()
 {
     std::vector<CelestialObject> celestialObjects;
-    celestialObjects.emplace_back(5.0, sunTexture, 0.0, 0.0, 0.0);
-    celestialObjects.emplace_back(0.5, mercuryTexture, 10.0, 0.0, 0.0);
-    celestialObjects.emplace_back(1.0, venusTexture, 15.0, 0.0, 0.0);
-    celestialObjects.emplace_back(1.0, earthTexture, 20.0, 0.0, 0.0);
-    celestialObjects.emplace_back(0.8, marsTexture, 25.0, 0.0, 0.0);
-    celestialObjects.emplace_back(2.5, jupiterTexture, 35.0, 0.0, 0.0);
-    celestialObjects.emplace_back(2.0, saturnTexture, 45.0, 0.0, 0.0);
-    celestialObjects.emplace_back(1.7, uranusTexture, 55.0, 0.0, 0.0);
-    celestialObjects.emplace_back(1.4, neptuneTexture, 65.0, 0.0, 0.0);
+    celestialObjects.emplace_back(10.0, sunTexture, 0.0, 0.0, 0.0);
+    celestialObjects.emplace_back(0.8, mercuryTexture, 20.0, 0.0, 0.0);
+    celestialObjects.emplace_back(1.8, venusTexture, 25.0, 0.0, 0.0);
+    celestialObjects.emplace_back(2.0, earthTexture, 30.0, 0.0, 0.0);
+    celestialObjects.emplace_back(1.0, marsTexture, 35.0, 0.0, 0.0);
+    celestialObjects.emplace_back(5.0, jupiterTexture, 45.0, 0.0, 0.0);
+    celestialObjects.emplace_back(4.5, saturnTexture, 55.0, 0.0, 0.0);
+    celestialObjects.emplace_back(3.5, uranusTexture, 65.0, 0.0, 0.0);
+    celestialObjects.emplace_back(3.0, neptuneTexture, 75.0, 0.0, 0.0);
     return celestialObjects;
 }
 
@@ -428,8 +428,6 @@ void keyInput(unsigned char key, int x, int y) {
         playerSpacecraft.setDamage(re.second.getDamage());
         playerSpacecraft.setHealth(re.second.getHealth());
     }
-
-    glutPostRedisplay();
 }
 
 // Function to handle mouse input for camera rotation
@@ -497,10 +495,10 @@ void mouseClick(int button, int state, int x, int y) {
 void clockTick(int value)
 {
 
-    latAngle += 1.0;
+    latAngle += 0.5;
     if (latAngle > 360.0)
         latAngle -= 360.0;
-    longAngle += 10.0;
+    longAngle += 0.5;
     if (longAngle > 360.0)
         longAngle -= 360.0;
     
