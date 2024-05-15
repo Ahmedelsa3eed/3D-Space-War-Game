@@ -121,7 +121,6 @@ void enemySpaceCraftShooting() {
 
 void drawObjects()
 {
-
     // Animate the Celestial Objects
     for (int i = 0; i < celestialObjects.size(); ++i)
     {
@@ -129,6 +128,7 @@ void drawObjects()
     }
 
     // Draw the player spacecraft
+    playerSpacecraft.setPosition(cameraX, cameraY, cameraZ + 1);
     playerSpacecraft.draw();
 
     // Draw the enemy spacecrafts
@@ -142,8 +142,6 @@ void drawObjects()
     {
         consumable.draw();
     }
-
-    
 }
 
 void drawSkybox() {
@@ -355,7 +353,7 @@ void setup(void)
     glEnable(GL_DEPTH_TEST); // Enable depth testing for 3D rendering
     loadTextures(); // Load textures for celestial objects
     celestialObjects =  createCelestialObjects();
-    playerSpacecraft = SpaceCraft(100, 10, 15.0, 5.0, 5.0, true);
+    playerSpacecraft = SpaceCraft(100, 10, cameraX, cameraY, cameraZ + 1, true);
     enemySpacecrafts = createEnemySpacecrafts();
     consumables = createConsumables();
 }
@@ -540,9 +538,9 @@ void mouseClick(int button, int state, int x, int y) {
 
         gluUnProject(winX, winY, winZ, modelview, projection, viewport, &posX, &posY, &posZ);
 
-        Point source = Point(cameraX, cameraY, cameraZ);
-        Point dist = Point(posX - cameraX, posY - cameraY, posZ - cameraZ);
-        Projectile *proj = new Projectile(playerSpacecraft.getDamage(), true, source, dist);
+        Point source = playerSpacecraft.getPosition();
+        Point direction = Point(posX - source.x, posY - source.y, posZ - source.z);
+        Projectile *proj = new Projectile(playerSpacecraft.getDamage(), true, source, direction);
         playerSpacecraft.shoot(&projectileManager, proj);
     }
 }
