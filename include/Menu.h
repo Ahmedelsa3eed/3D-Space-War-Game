@@ -34,6 +34,8 @@ public:
 
     void printStartGameOption(float x, float y, float z);
 
+    void writeGameOver(float x, float y, float z);
+
     void writeMenuOptions(void);
 };
 
