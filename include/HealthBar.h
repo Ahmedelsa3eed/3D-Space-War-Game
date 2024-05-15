@@ -3,7 +3,7 @@
 
 class HealthBar {
 public:
-    void draw(float health);
+    void drawPlayerHealthBar(float health);
     void drawEnemyHealthBar(float health);
 };
 

@@ -4,7 +4,7 @@
 #include <GL/freeglut.h>
 
 Menu::Menu() {
-    font = GLUT_BITMAP_8_BY_13;
+    font = GLUT_BITMAP_HELVETICA_18;
     level = EASY;
     mode = SURVIVAL;
 }
@@ -49,13 +49,19 @@ void Menu::printStartGameOption(float x, float y, float z) {
     writeBitmapString((void*)font, "Press 'Enter' to start the Game");
 }
 
+void Menu::writeGameOver(float x, float y, float z) {
+	glColor3f(1.0, 1.0, 1.0);
+	glRasterPos3f(x, y, z);
+	writeBitmapString((void*)font, "Game Over!");
+}
+
 // write game options to screen
 void Menu::writeMenuOptions(void) {
 	glColor3f(1.0, 1.0, 1.0);
 
 	printGameLevel(-1.0, 0.1, -2.0);
-	printGameMode(-1.0, 0.02, -2.0);
-    printStartGameOption(-1.0, -0.06, -2.0);
+	printGameMode(-1.0, 0.0, -2.0);
+    printStartGameOption(-1.0, -0.1, -2.0);
 }
 
 int Menu::getLevel() {
