@@ -21,7 +21,7 @@ const unsigned int CLOCK_TICK_PERIOD = 30;
 
 // Global variables
 GLuint sunTexture, mercuryTexture, venusTexture, earthTexture, marsTexture, jupiterTexture, saturnTexture, uranusTexture, neptuneTexture, moonTexture;
-GLuint spacecraftTexture;
+GLuint spacecraftTexture, skyBoxTexture;
 static int width, height; // Size of the OpenGL window.
 float latAngle = 0;   // Definition
 float longAngle = 0;  // Definition
@@ -61,6 +61,7 @@ void loadTextures()
     uranusTexture = SOIL_load_OGL_texture("textures/uranus.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     neptuneTexture = SOIL_load_OGL_texture("textures/neptune.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     spacecraftTexture = SOIL_load_OGL_texture("textures/spacecraft.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
+    skyBoxTexture = SOIL_load_OGL_texture("textures/skybox.jpg", SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, SOIL_FLAG_INVERT_Y);
     SpaceCraft::texture = spacecraftTexture;
 }
 
@@ -143,6 +144,53 @@ void drawObjects()
     }
 
     
+}
+
+void drawSkybox() {
+    glEnable(GL_TEXTURE_2D);
+    for (int i = 0; i < 6; ++i) {
+        glBindTexture(GL_TEXTURE_2D, skyBoxTexture);
+        glBegin(GL_QUADS);
+        switch (i) {
+            case 0:
+                glTexCoord2f(0, 0); glVertex3f(500.0f, -500.0f, -500.0f);
+                glTexCoord2f(1, 0); glVertex3f(500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 1); glVertex3f(500.0f, 500.0f, 500.0f);
+                glTexCoord2f(0, 1); glVertex3f(500.0f, 500.0f, -500.0f);
+                break;
+            case 1:
+                glTexCoord2f(0, 0); glVertex3f(-500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 0); glVertex3f(-500.0f, -500.0f, -500.0f);
+                glTexCoord2f(1, 1); glVertex3f(-500.0f, 500.0f, -500.0f);
+                glTexCoord2f(0, 1); glVertex3f(-500.0f, 500.0f, 500.0f);
+                break;
+            case 2:
+                glTexCoord2f(0, 0); glVertex3f(-500.0f, 500.0f, -500.0f);
+                glTexCoord2f(1, 0); glVertex3f(500.0f, 500.0f, -500.0f);
+                glTexCoord2f(1, 1); glVertex3f(500.0f, 500.0f, 500.0f);
+                glTexCoord2f(0, 1); glVertex3f(-500.0f, 500.0f, 500.0f);
+                break;
+            case 3:
+                glTexCoord2f(0, 0); glVertex3f(-500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 0); glVertex3f(500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 1); glVertex3f(500.0f, -500.0f, -500.0f);
+                glTexCoord2f(0, 1); glVertex3f(-500.0f, -500.0f, -500.0f);
+                break;
+            case 4:
+                glTexCoord2f(0, 0); glVertex3f(-500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 0); glVertex3f(500.0f, -500.0f, 500.0f);
+                glTexCoord2f(1, 1); glVertex3f(500.0f, 500.0f, 500.0f);
+                glTexCoord2f(0, 1); glVertex3f(-500.0f, 500.0f, 500.0f);
+                break;
+            case 5:
+                glTexCoord2f(0, 0); glVertex3f(500.0f, -500.0f, -500.0f);
+                glTexCoord2f(1, 0); glVertex3f(-500.0f, -500.0f, -500.0f);
+                glTexCoord2f(1, 1); glVertex3f(-500.0f, 500.0f, -500.0f);
+                glTexCoord2f(0, 1); glVertex3f(500.0f, 500.0f, -500.0f);
+                break;
+        }
+        glEnd();
+    }
 }
 
 void endGame() {
@@ -269,6 +317,8 @@ void drawScene(void) {
     detectProjectileCollision();
     projectileManager.notifyClockTick();
     drawObjects();
+
+    drawSkybox();
 
     // ======================================================================================
     // Begin Bottom Right viewport.
