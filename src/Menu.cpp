@@ -1,4 +1,3 @@
-
 #include "Menu.h"
 #include <iostream>
 #include <GL/freeglut.h>
@@ -49,10 +48,10 @@ void Menu::printStartGameOption(float x, float y, float z) {
     writeBitmapString((void*)font, "Press 'Enter' to start the Game");
 }
 
-void Menu::writeGameOver(float x, float y, float z) {
+void Menu::writeGameOver(float x, float y, float z, std::string winStatus) {
 	glColor3f(1.0, 1.0, 1.0);
 	glRasterPos3f(x, y, z);
-	writeBitmapString((void*)font, "Game Over!");
+	writeBitmapString((void*)font, std::string("Game Over! " + winStatus).data());
 }
 
 // write game options to screen

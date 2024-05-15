@@ -25,7 +25,6 @@ GLuint spacecraftTexture;
 static int width, height; // Size of the OpenGL window.
 float latAngle = 0;   // Definition
 float longAngle = 0;  // Definition
-bool gameOver = false;
 bool winner = false;
 std::string isWinner[] = {"Lose", "Win"};
 
@@ -236,7 +235,7 @@ void drawScene(void) {
 
     if (gameOver)
     {
-        menu.writeGameOver(-0.2, 0.0, -2.0);
+        menu.writeGameOver(-1, 0.0, -2.0, isWinner[winner]);
         glutSwapBuffers();
         return;
     }

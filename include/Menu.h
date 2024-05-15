@@ -1,6 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <string>
+
 class Menu {
 private:
 
@@ -34,7 +36,7 @@ public:
 
     void printStartGameOption(float x, float y, float z);
 
-    void writeGameOver(float x, float y, float z);
+    void writeGameOver(float x, float y, float z, std::string winStatus);
 
     void writeMenuOptions(void);
 };
