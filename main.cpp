@@ -83,7 +83,10 @@ std::vector<CelestialObject> createCelestialObjects()
 std::vector<SpaceCraft> createEnemySpacecrafts()
 {
     std::vector<SpaceCraft> enemySpacecrafts;
-    enemySpacecrafts.emplace_back(100, 10.0, 15.0, 0.0, -5.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, 15.0, 15.0, -6.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, 15.0, -10.0, -5.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, 20.0, 0.0, -4.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, 20.0, 5.0, -7.0, false);
     return enemySpacecrafts;
 }
 
@@ -132,8 +135,18 @@ void drawObjects()
     playerSpacecraft.draw();
 
     // Draw the enemy spacecrafts
-    for (const auto &enemySpacecraft : enemySpacecrafts)
+    for (SpaceCraft &enemySpacecraft : enemySpacecrafts)
     {
+        Point oldPosition = enemySpacecraft.getPosition();
+        Point direction = playerSpacecraft.getPosition() - enemySpacecraft.getPosition();
+        float directionMagnitude = sqrt(pow(direction.x, 2) + pow(direction.y, 2) + pow(direction.z, 2));
+        direction.x /= directionMagnitude;
+        direction.y /= directionMagnitude;
+        direction.z /= directionMagnitude;
+        Point newPosition = enemySpacecraft.getPosition() + direction * 0.08;
+        enemySpacecraft.setPosition(newPosition.x, newPosition.y, newPosition.z);
+        if (enemySpacecraft.overlaps(playerSpacecraft.boundingSphere))
+            enemySpacecraft.setPosition(oldPosition.x, oldPosition.y, oldPosition.z);
         enemySpacecraft.draw();
     }
 
