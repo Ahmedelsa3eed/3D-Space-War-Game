@@ -36,8 +36,6 @@ void CelestialObject::draw() const {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texture);
 
-    glPushMatrix();
-    glTranslatef(position.x, position.y, position.z);
     GLUquadric *quadric = gluNewQuadric();
     gluQuadricTexture(quadric, GL_TRUE);
     gluSphere(quadric, radius, 30, 30);
@@ -72,13 +70,14 @@ void CelestialObject::drawMoon(){
     float moonRadius = 0.2;
     gluSphere(quadric, moonRadius, 30, 30);
     gluDeleteQuadric(quadric);
+    glDeleteTextures(1, &moonTexture);
 
     glDisable(GL_TEXTURE_2D);
 }
 
 void CelestialObject::animateMoon() {
     glPushMatrix();
-    float xRelativeEarth = 2.0;
+    float xRelativeEarth = 3.0;
     float yRelativeEarth = 0.0;
     float zRelativeEarth = 0.0;
     glRotatef(45, 0.0, 0.0, 1.0);

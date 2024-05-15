@@ -133,12 +133,6 @@ void SpaceCraft::draw() const {
         glPopMatrix();
     }
 
-    // Wings of the spacecraft
-    GLfloat wingLength = bodyRadius * 2.0;
-    GLfloat wingWidth = bodyRadius * 0.4;
-    GLfloat wingHeight = bodyRadius * 0.1;
-
-
     // Left wing
     glPushMatrix();
     glTranslatef(-bodyRadius * 1.2, 0.0, -bodyLength * 0.25);
