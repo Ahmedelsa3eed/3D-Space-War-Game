@@ -49,8 +49,11 @@ void CelestialObject::animate(int i) {
     glTranslatef(position.x, position.y, position.z);
 
     glTranslatef(-10*(i), 0.0, 0.0);
+    // Point p = getPosition();
+    // setPosition(p.x-10*(i), p.y, p.z);
     glRotatef(latAngle*(9-i), 0.0, 1.0, 0.0); //
     glTranslatef(10*(i), 0.0, 0.0);
+    // setPosition(p.x+10*(i), p.y, p.z);
 
     if (i) glRotatef(longAngle, 0.0, 1.0, 0.0); // not the sun
 
