@@ -53,9 +53,9 @@ void CelestialObject::draw() const {
 void CelestialObject::animate(int i) {
     glPushMatrix();
     glTranslatef(initialPosition.x, initialPosition.y, initialPosition.z);
-    if (i==3){
-        printf("%f, %f, %f  ", position.x, position.y, position.z);
-    }
+    // if (i==3){
+    //     printf("%f, %f, %f  ", position.x, position.y, position.z);
+    // }
 
     glTranslatef(-10*(i), 0.0, 0.0);
     glRotatef(latAngle*(9-i), 0.0, 1.0, 0.0); //
