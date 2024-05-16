@@ -69,14 +69,14 @@ std::vector<CelestialObject> createCelestialObjects()
 {
     std::vector<CelestialObject> celestialObjects;
     celestialObjects.emplace_back(10.0, sunTexture, 0.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(0.8, mercuryTexture, 20.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(1.8, venusTexture, 25.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(2.0, earthTexture, 30.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(1.0, marsTexture, 35.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(5.0, jupiterTexture, 45.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(4.5, saturnTexture, 55.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(3.5, uranusTexture, 65.0, 0.0, 0.0);
-    // celestialObjects.emplace_back(3.0, neptuneTexture, 75.0, 0.0, 0.0);
+    celestialObjects.emplace_back(0.8, mercuryTexture, 20.0, 0.0, 0.0);
+    celestialObjects.emplace_back(1.8, venusTexture, 25.0, 0.0, 0.0);
+    celestialObjects.emplace_back(2.0, earthTexture, 30.0, 0.0, 0.0);
+    celestialObjects.emplace_back(1.0, marsTexture, 35.0, 0.0, 0.0);
+    celestialObjects.emplace_back(5.0, jupiterTexture, 45.0, 0.0, 0.0);
+    celestialObjects.emplace_back(4.5, saturnTexture, 55.0, 0.0, 0.0);
+    celestialObjects.emplace_back(3.5, uranusTexture, 65.0, 0.0, 0.0);
+    celestialObjects.emplace_back(3.0, neptuneTexture, 75.0, 0.0, 0.0);
     return celestialObjects;
 }
 
@@ -118,7 +118,7 @@ void enemySpaceCraftShooting() {
         else 
             dis = generate_nearby_point(playerSpacecraft.getPosition(), 5);
         Projectile *proj = new Projectile(10, false, source, dis - source);
-        // enemySpacecraft.shoot(&projectileManager, proj);
+        enemySpacecraft.shoot(&projectileManager, proj);
     }
 }
 
@@ -325,7 +325,7 @@ void drawScene(void) {
     healthBar.drawPlayerHealthBar(playerSpacecraft.getHealth());
 
     // Draw objects in the main viewport
-    // detectProjectileCollision();
+    detectProjectileCollision();
     projectileManager.notifyClockTick();
     drawObjects();
 
