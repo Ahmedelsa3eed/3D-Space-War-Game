@@ -16,6 +16,9 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <random>
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
 
 const unsigned int CLOCK_TICK_PERIOD = 30;
 
@@ -39,8 +42,7 @@ ProjectileManager projectileManager(0.25);
 GLfloat cameraX = 0.0f;
 GLfloat cameraY = 20.0f;
 GLfloat cameraZ = 50.0f;
-GLfloat cameraYaw = 0.0f;   // Yaw angle (rotation around the y-axis)
-GLfloat cameraPitch = 0.0f; // Pitch angle (rotation around the x-axis)
+float leftRightAngle = 0;
 
 Menu menu;
 HealthBar healthBar;
@@ -84,9 +86,9 @@ std::vector<SpaceCraft> createEnemySpacecrafts()
 {
     std::vector<SpaceCraft> enemySpacecrafts;
     enemySpacecrafts.emplace_back(100, 10.0, 15.0, 15.0, -6.0, false);
-    enemySpacecrafts.emplace_back(100, 10.0, 15.0, -10.0, -5.0, false);
-    enemySpacecrafts.emplace_back(100, 10.0, 20.0, 0.0, -4.0, false);
-    enemySpacecrafts.emplace_back(100, 10.0, 20.0, 5.0, -7.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, 15.0, -15.0, -6.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, -15.0, 15.0, -6.0, false);
+    enemySpacecrafts.emplace_back(100, 10.0, -15.0, -15.0, -6.0, false);
     return enemySpacecrafts;
 }
 
@@ -263,6 +265,7 @@ void drawViewPortBorder()
 void detectProjectileCollision() {
     for (Projectile *projectile : projectileManager.projectiles) {
         if (playerSpacecraft.boundingSphere.overlaps(projectile->boundingSphere) && !projectile->getOwner()) {
+            PlaySound(TEXT("sounds/hit.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
             playerSpacecraft.useProjectile(*projectile);
             projectileManager.projectiles.erase(projectile);
             free(projectile);
@@ -296,6 +299,7 @@ void drawScene(void) {
     {
         menu.writeGameOver(-1, 0.0, -2.0, isWinner[winner]);
         glutSwapBuffers();
+        PlaySound(TEXT("sounds/gameover.wav"), NULL, SND_FILENAME|SND_LOOP|SND_ASYNC);
         return;
     }
 
@@ -305,8 +309,7 @@ void drawScene(void) {
         cameraY = 20.0f;
         cameraX = 0.0f;
         cameraZ = 50.0f;
-        cameraYaw = 0.0f;
-        cameraPitch = 0.0f;
+        leftRightAngle = 0;
         menu.writeMenuOptions();
         glutSwapBuffers();
         return;
@@ -316,13 +319,18 @@ void drawScene(void) {
     glViewport(0, 0, width, height);
     glLoadIdentity();
 
-    // Position and orient the camera
-    glTranslatef(-cameraX, -cameraY, -cameraZ);
-    glRotatef(cameraPitch, 1.0f, 0.0f, 0.0f);
-    glRotatef(cameraYaw, 0.0f, 1.0f, 0.0f);
-
     // Draw the player health bar
     healthBar.drawPlayerHealthBar(playerSpacecraft.getHealth());
+
+    gluLookAt(cameraX,
+              cameraY,
+              cameraZ,
+              cameraX - sin((M_PI / 180.0) * leftRightAngle),
+              cameraY,
+              cameraZ - cos((M_PI / 180.0) * leftRightAngle),
+              0.0,
+              1.0,
+              0.0);
 
     // Draw objects in the main viewport
     detectProjectileCollision();
@@ -441,32 +449,44 @@ void keyInput(unsigned char key, int x, int y) {
     float tempX = cameraX;
     float tempY = cameraY;
     float tempZ = cameraZ;
+    float tempLeftRightAngle = leftRightAngle;
 
     switch (key) {
     // Menu buttons
     case 13: // Start on Enter
+        if (started)
+            return;
         started = true;
+        PlaySound(TEXT("sounds/menu.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
         glutPostRedisplay();
         break;
     case 'l':
+        if (started)
+            return;
         menu.toggleLevel();
+        PlaySound(TEXT("sounds/menu.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
         glutPostRedisplay();
         break;
     case 'm':
+        if (started)
+            return;
         menu.toggleMode();
+        PlaySound(TEXT("sounds/menu.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
         glutPostRedisplay();
         break;
     case 'w':
-        tempZ -= 1.0f; // Move forward
+		tempX = cameraX - sin(leftRightAngle * M_PI / 180.0);
+		tempZ = cameraZ - cos(leftRightAngle * M_PI / 180.0);
         break;
     case 's':
-        tempZ += 1.0f; // Move backward
+		tempX = cameraX + sin(leftRightAngle * M_PI / 180.0);
+		tempZ = cameraZ + cos(leftRightAngle * M_PI / 180.0);
         break;
     case 'a':
-        tempX -= 1.0f; // Move left
+        tempLeftRightAngle += 5;
         break;
     case 'd':
-        tempX += 1.0f; // Move right
+        tempLeftRightAngle -= 5;
         break;
     case 'z':
         tempY -= 1.0f; // Move down
@@ -479,12 +499,18 @@ void keyInput(unsigned char key, int x, int y) {
         break;
     }
 
-    SpaceCraft tempCraft = SpaceCraft(playerSpacecraft.getHealth(), playerSpacecraft.getDamage(),tempX, tempY, tempZ, true); 
+	if (leftRightAngle > 360)
+		leftRightAngle -= 360;
+	else if (leftRightAngle < 0)
+		leftRightAngle += 360;
+
+    SpaceCraft tempCraft = SpaceCraft(playerSpacecraft.getHealth(), playerSpacecraft.getDamage(), tempX, tempY, tempZ + 1, true);
     tempCraft.updateBB();
     
     std::pair<bool, SpaceCraft> re = detectCollision(tempCraft);
     bool coll = re.first;
     if (coll) {
+        PlaySound(TEXT("sounds/collision.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
         std::cout << "Collision Detected !!!!!!" << std::endl;
     }
 
@@ -492,42 +518,18 @@ void keyInput(unsigned char key, int x, int y) {
         cameraX = tempX;
         cameraY = tempY;
         cameraZ = tempZ;
-        //playerSpacecraft.setPosition(cameraX, cameraY, cameraZ);
+        leftRightAngle = tempLeftRightAngle;
         playerSpacecraft.setDamage(re.second.getDamage());
         playerSpacecraft.setHealth(re.second.getHealth());
     }
 }
 
-// Function to handle mouse input for camera rotation
-void mouseMotion(int x, int y)
-{
-    static int lastX = -1;
-    static int lastY = -1;
-
-    if (lastX == -1 || lastY == -1)
-    {
-        lastX = x;
-        lastY = y;
-        return;
-    }
-
-    int deltaX = x - lastX;
-    int deltaY = y - lastY;
-
-    cameraYaw += deltaX * 0.1f;
-    cameraPitch += deltaY * 0.1f;
-
-    if (cameraPitch > 90.0f)
-        cameraPitch = 90.0f;
-    if (cameraPitch < -90.0f)
-        cameraPitch = -90.0f;
-
-    lastX = x;
-    lastY = y;
-}
-
 void mouseClick(int button, int state, int x, int y) {
+    if (!started)
+        return;
+    
     if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN) {
+        PlaySound(TEXT("sounds/gun.wav"), NULL, SND_ASYNC|SND_FILENAME|SND_NOSTOP);
         // Convert mouse coordinates to OpenGL viewport coordinates
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, width, height);
@@ -562,6 +564,9 @@ void mouseClick(int button, int state, int x, int y) {
 // Timer function.
 void clockTick(int value)
 {
+    glutTimerFunc(CLOCK_TICK_PERIOD, clockTick, value);
+    if (gameOver || (!started))
+        return;
 
     latAngle += 0.5;
     if (latAngle > 360.0)
@@ -587,7 +592,6 @@ void clockTick(int value)
     
     endGame();
     glutPostRedisplay();
-    glutTimerFunc(CLOCK_TICK_PERIOD, clockTick, value);
 }
 
 // Main routine
@@ -603,7 +607,6 @@ int main(int argc, char **argv)
     glutDisplayFunc(drawScene);
     glutReshapeFunc(resize);
     glutKeyboardFunc(keyInput);
-    //glutPassiveMotionFunc(mouseMotion);
     glutMouseFunc(mouseClick);
     glewExperimental = GL_TRUE;
     glewInit();
