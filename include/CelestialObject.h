@@ -9,6 +9,7 @@
 class CelestialObject : public IDrawable {
 private:
     Point position; // Position of the celestial object
+    Point initialPosition; // Position of the celestial object
 
 public:
     GLfloat radius; // Radius of the celestial object
