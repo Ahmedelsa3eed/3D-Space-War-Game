@@ -2,7 +2,7 @@
 
 Welcome to the 3D Space War Game, an immersive space battle experience developed using OpenGL. The game enables users from controlling spacecraft to explore the solar system while being attacked by enemy spacecrafts. It uses two view ports: One for spacecraft (first person view) and the other for the whole solar system (See figure 1 for more declaration).
 
-![window](image.png)
+![window](application-window.png)
 
 ## Demo
 https://youtu.be/Muua5_27-84
